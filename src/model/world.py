@@ -16,7 +16,7 @@ class World:
         are all the characters and buildings of the game
     """
     
-    def __init__(self, event_horizon, size:tuple = (128,128), min_size:tuple = (20,30), biomes:int=64):
+    def __init__(self, size:tuple = (128,128), min_size:tuple = (20,30), biomes:int=64):
         assert biomes <= 128, \
             "So many biomes take a long time to generate the world"
         
@@ -31,7 +31,6 @@ class World:
         self.positions: Matrix = self._generate_positions(size)
         self.chunks= self._generate_chunks(min_size, size, self.positions)
         self.cells = self._generate_cells(self.positions,biomes)
-        self.cells = self.set_event_horizon(self.cells, event_horizon)
         self.entities = NonDirectionalGraph() # {Position -- Object}
 
 
@@ -195,32 +194,6 @@ class World:
         zones = iter(positions.generate_voronoi_tesselation(sorted_index))
         
         return {position:seeds[next(zones)] for position in positions}
-
-
-    def set_event_horizon(self, world_map, event_horizon):
-        """ Receives the cells dictionary with the designated
-            biomes and sets a wall on the borders 
-            in order to prevent camera erros.
-        """
-        wall_width = event_horizon
-        wall = Biome.OCEAN
-        
-        wall_space = []
-        
-        [
-            wall_space.append(self.positions.get_row(i) 
-            + self.positions.get_row(-i) 
-            + self.positions.get_column(-i) 
-            + self.positions.get_column(i))
-            for i in range(wall_width)
-        ]
-            
-        # Fill the wall spaces with wall.
-        for row in wall_space:
-            for col in row:
-                world_map[col] = wall
-
-        return world_map
 
 
     def generate_spawn_points(self, quantity:int=1) -> set[Position]:

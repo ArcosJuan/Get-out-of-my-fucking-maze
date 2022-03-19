@@ -22,7 +22,7 @@ class Logic:
 
 
     def game_start(self, event):
-        self.world = self._create_world()
+        self.world =  World()
         player_position = list(self.world.generate_spawn_points())[0]
         self.world.add_entity(player_position, self.player)
         Ed.post(WorldGenerated(self.world))
@@ -32,16 +32,6 @@ class Logic:
             position[1],
             position[0]
         ))
-
-
-    def _create_world(self):
-        # Needs to get the quantity of cells in the window, 
-        # in order to get a correct size to the horizon line.
-        grid_lenght = Window().calculate_grid(Sprite.get_min_size())
-        horizon_line = grid_lenght[1] if grid_lenght[1] > grid_lenght[0] else grid_lenght[0]
-
-        world = World(horizon_line)
-        return world
 
 
     def move_player(self, event):
