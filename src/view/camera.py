@@ -105,6 +105,20 @@ class Camera:
         
         self.update_center(origin, actual_length)
         
+        if event.get_y() and not event.get_x():
+            if event.get_target_position()[0] != self.center[0]:
+                self.refresh_sprites()
+                return
+
+        elif event.get_x() and not event.get_y():
+            if event.get_target_position()[1] != self.center[1]:
+                self.refresh_sprites()
+                return
+
+        elif event.get_y() and event.get_x():
+            if event.get_target_position()[1] != self.center[1] and event.get_target_position()[0] != self.center[0]:
+                self.refresh_sprites()
+                return
 
         new_sprites, removed_sprites = self.world.replace_cells(
             self, self.visible_positions, origin
