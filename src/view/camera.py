@@ -23,9 +23,9 @@ class Camera:
         self.visible_sprites = dict() # {Position: {Layer: Sprite}}
 
         self.origin = (0,0)
+        self.center = [None, None]
 
         self._switch = 0
-
         # Minimum harcoded size for the cells matrix. 
         self.min_length = (3,5)
         self.max_length = Window().calculate_grid(Sprite.get_min_size())
@@ -102,6 +102,9 @@ class Camera:
                         
         actual_length = self.visible_positions.length()
         origin = self.world.validate_origin(estimated_origin, actual_length)[1]
+        
+        self.update_center(origin, actual_length)
+        
 
         new_sprites, removed_sprites = self.world.replace_cells(
             self, self.visible_positions, origin
@@ -276,6 +279,14 @@ class Camera:
         self.origin = self._get_new_origin()
 
         self.refresh_sprites()
+
+        self.update_center(origin[1], actual_length)
+
+    def update_center(self, origin, actual_length):
+        self.center = [
+        origin[0] + (actual_length[0]-1)//2,
+        origin[1] + (actual_length[1]-1)//2
+        ]
 
 
     def _change_sprite_events(self, dispatcher_method, sprites):
