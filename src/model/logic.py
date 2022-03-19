@@ -41,9 +41,20 @@ class Logic:
         player_position_x = player_position.get_index()[1] + event.get_x()
         player_position_y = player_position.get_index()[0] - event.get_y()
 
-        if player_position_x < self.world.get_size()[0] and player_position_y < self.world.get_size()[1]  and player_position_x > 0 and player_position_y > 0:
+        if player_position_x < self.world.get_size()[0] \
+            and player_position_y < self.world.get_size()[1] \
+            and player_position_x >= 0 \
+            and player_position_y >= 0:
 
-            player_destination = self.world.get_position((player_position_y, player_position_x))
-            if self.world.move_entity(MoveEntity(self.player, player_destination[1])):
-                Ed.post(MoveCamera(event.get_x(), event.get_y()))
-            
+            player_destination = self.world.get_position(
+                (player_position_y, player_position_x)
+                )
+                
+            if self.world.move_entity(
+                MoveEntity(self.player, player_destination[1])
+                ):
+
+                Ed.post(MoveCamera(
+                    (player_position_y, player_position_x),
+                    event.get_x(), event.get_y()
+                    ))
