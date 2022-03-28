@@ -3,7 +3,7 @@ import pygame as pg
 import random
 from src.references import images as img
 from src.references import Layer
-from src.model.charactors import Player
+from src.model import Player
 from src.view.sprites import PlayerSprite
 
 
