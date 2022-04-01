@@ -14,3 +14,11 @@ CELL = {
     Biome.SNOW:pg.image.load('assets/graphics/biomes/snow.png').convert(),
     Biome.OCEAN:pg.image.load('assets/graphics/biomes/ocean.png').convert(),
 }
+
+_dialog_images = pg.image.load('assets/graphics/dialog/dialog_tiles20x20.png').convert()
+
+DIALOG = {
+    "TOPLEFT":pg.transform.chop(_dialog_images, (20,20,40,20)),
+    "TOP":pg.transform.chop(pg.transform.chop(_dialog_images, (0,20,20,20)), (20,20,20,20)),
+    "CENTER":pg.transform.chop(_dialog_images, (0,20,40,20)),
+}
