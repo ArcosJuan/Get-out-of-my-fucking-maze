@@ -1,3 +1,3 @@
 import pygame as pg
 
-DIALOG_FONT = pg.font.Font('./assets/fonts/dpcomic.ttf', 20)
+FONT_ADDRESS = './assets/fonts/dpcomic.ttf'
