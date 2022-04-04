@@ -173,7 +173,7 @@ class DialogBoxSprite:
         return text_area
 
 
-    def draw(self, event, surface = None):
+    def draw(self, surface = None):
         (surface if surface else Window().surface).blit(self.box_image, self.box_rect)
         if self.text_rows: 
             for text_box in self.text_rows:
