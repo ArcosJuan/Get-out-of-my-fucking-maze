@@ -1,3 +1,4 @@
+from src.controller import EventDispatcher as Ed
 from src.events import ArrowKey
 from src.events import MoveEntity
 from src.events import MoveCamera
@@ -5,10 +6,9 @@ from src.events import CellPressed
 from src.events import GameStart
 from src.events import PointEntity
 from src.events import WorldGenerated
-from src.model.biomes_manager import BiomesManager
+from src.model import BiomesManager
+from src.model import Player
 from src.model import World
-from src.controller.event_dispatcher import EventDispatcher as Ed
-from src.model.charactors import Player
 from src.view import Window
 from src.view.sprites import Sprite
 
