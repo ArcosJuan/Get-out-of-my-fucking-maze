@@ -22,3 +22,5 @@ DIALOG = {
     "TOP":pg.transform.chop(pg.transform.chop(_dialog_images, (0,20,20,20)), (20,20,20,20)),
     "CENTER":pg.transform.chop(_dialog_images, (0,20,40,20)),
 }
+
+PRESS_N = pg.image.load('assets/graphics/dialog/press_n600x600.png').convert_alpha()
