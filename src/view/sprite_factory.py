@@ -3,7 +3,9 @@ import pygame as pg
 import random
 from src.references import images as img
 from src.references import Layer
+from src.model import Maze
 from src.model import Player
+from src.view.sprites import MazeSprite
 from src.view.sprites import PlayerSprite
 
 
@@ -13,7 +15,8 @@ class SpriteFactory:
     """
 
     sprite_equivalences = {
-        Player: (Layer.CHARACTOR, PlayerSprite)
+        Maze: (Layer.ENTITY, MazeSprite),
+        Player: (Layer.CHARACTOR, PlayerSprite),
     }
 
     hue = random.random()
@@ -36,6 +39,10 @@ class SpriteFactory:
         for position in entities:
             for entity in entities[position]:
                 layer, sprite = cls.get_sprite(entity)
-                entity_sprites |= {position: {layer: sprite}}
+                if entity_sprites.get(position): 
+                    entity_sprites[position] |= {layer: sprite}
+                else: 
+                    entity_sprites |= {position: {layer:sprite}}
+                    
 
         return entity_sprites
