@@ -1,11 +1,11 @@
 import pygame as pg
 from src.view.sprites import Sprite
-from src.references.images import CHIP
+from src.references.images import PLAYER
 
 class PlayerSprite(Sprite):
 
     def __init__(self):
-        self.sprite = CHIP["filling"]
+        self.sprite = PLAYER
         self.image = self.sprite
         self.rect = self.image.get_rect()
 
