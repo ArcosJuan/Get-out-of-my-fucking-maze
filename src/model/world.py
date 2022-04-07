@@ -7,6 +7,8 @@ from lib.abstract_data_types import Matrix
 from lib.chunk import Chunk
 from lib.position import Position
 from src.model import BiomesManager
+from src.model import Maze
+from src.model import Innocent
 from src.controller.event_dispatcher import EventDispatcher as Ed
 from src.references.biome import Biome
 
@@ -29,9 +31,9 @@ class World:
 
         self.size = size
         self.positions: Matrix = self._generate_positions(size)
+        self.entities = NonDirectionalGraph() # {Position -- Object}
         self.chunks= self._generate_chunks(min_size, size, self.positions)
         self.cells = self._generate_cells(self.positions,biomes)
-        self.entities = NonDirectionalGraph() # {Position -- Object}
 
 
     def get_position(self, position_index) -> (Chunk,Position):
@@ -192,8 +194,15 @@ class World:
                     
         sorted_index = [seeds_index[key] for key in sorted(seeds_index)]
         zones = iter(positions.generate_voronoi_tesselation(sorted_index))
-        
+        self._generate_mazes(sorted_index, biomes_qty//8)
         return {position:seeds[next(zones)] for position in positions}
+
+    def _generate_mazes(self, seeds, qty):
+        seeds = iter(seeds)
+        for _ in range(qty):
+            position = self.positions.get_element(next(seeds))
+            self.add_entity(position, Maze())
+        pass    
 
 
     def generate_spawn_points(self, quantity:int=1) -> set[Position]:
@@ -260,7 +269,7 @@ class World:
         elif self.entities.has_node(position): 
             for entity in self.entities.get_adjacencies(position):
                 entity
-                if isinstance(entity, Charactor):
+                if isinstance(entity, Innocent):
                     return True
 
 
