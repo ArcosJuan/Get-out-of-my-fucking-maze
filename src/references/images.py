@@ -4,6 +4,9 @@ from src.references import Tile
 
 
 PLAYER =  pg.image.load('assets/graphics/entities/charactors/player.png').convert_alpha()
+INNOCENT =  pg.image.load('assets/graphics/entities/charactors/innocent.png').convert_alpha()
+LADDER =  pg.image.load('assets/graphics/entities/ladder.png').convert_alpha()
+WALL =  pg.image.load('assets/graphics/entities/wall.png').convert_alpha()
 
 CELL = {
     Biome.DESERT:pg.image.load('assets/graphics/biomes/desert.png').convert(),
