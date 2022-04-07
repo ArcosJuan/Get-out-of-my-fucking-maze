@@ -1,8 +1,8 @@
 from enum import auto
-from enum import IntEnum
+from enum import Enum
 
 
-class Tile(IntEnum):
+class Tile(Enum):
     EMPTY = auto()
     STONE = auto()
 
