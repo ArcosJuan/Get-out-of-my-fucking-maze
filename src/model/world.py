@@ -8,7 +8,7 @@ from lib.chunk import Chunk
 from lib.position import Position
 from src.model import BiomesManager
 from src.model import Maze
-from src.model import Innocent
+from src.model.entities import Innocent
 from src.controller.event_dispatcher import EventDispatcher as Ed
 from src.references.biome import Biome
 
