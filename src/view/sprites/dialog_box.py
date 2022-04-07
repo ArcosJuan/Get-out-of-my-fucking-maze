@@ -28,7 +28,7 @@ class DialogBoxSprite:
 
         # Text properties:
         self.text_p = {
-            'height_percentage':text_height_percentage,
+            'height':self.box_image.get_size()[1] * text_height_percentage // 100,
             'margins_percentage': text_margins_percentage,
             'color': text_color,
             'line_spacing': text_line_spacing
@@ -38,9 +38,6 @@ class DialogBoxSprite:
         self.text_rows = []
 
         self.text_area = self._create_text_area(self.text_p['margins_percentage'])
-        TextBoxSprite.set_font_height(self.box_image.get_size()[1] * self.text_p['height_percentage'] / 100)
-        
-        
 
 
     def set_box_proportions(self, min_size, max_size):
@@ -187,7 +184,7 @@ class DialogBoxSprite:
         self.text_rows = []
 
         for row in range(0, len(text)):
-            self.text_rows.append(TextBoxSprite(text[row], self.text_p['color']))
+            self.text_rows.append(TextBoxSprite(text[row], self.text_p["height"], self.text_p['color']))
             if row == 0:
                 self.text_rows[0].get_rect().topleft = self.text_area.topleft
             else: 
@@ -203,13 +200,14 @@ class DialogBoxSprite:
         """
 
         cut_text = []
-        text_width = TextBoxSprite.get_font().size(text)[0]
-        if TextBoxSprite.get_font().size(text)[0] > self.text_area.width:
+        text_font = TextBoxSprite.get_font(self.text_p["height"])
+        text_width = text_font.size(text)[0]
+        if text_font.size(text)[0] > self.text_area.width:
             line_width = self.text_area.width *  100 / text_width
             line_width = int(line_width * len(text) // 100)
 
             while True:
-                if TextBoxSprite.get_font().size(text[:line_width])[0] + TextBoxSprite.get_font().size('-')[0] >= self.text_area.width:
+                if text_font.size(text[:line_width])[0] + text_font.size('-')[0] >= self.text_area.width:
                     line_width -= 1
                 else: break
 
@@ -246,7 +244,7 @@ class DialogBoxSprite:
             each group can fit in the text_area.
         """
 
-        rows = self.text_area.height // (TextBoxSprite.get_font_height() + self.text_p['line_spacing'])
+        rows = self.text_area.height // (self.text_p["height"] + self.text_p['line_spacing'])
         cut_text = []
         while text:
             group = []
