@@ -1,10 +1,11 @@
 import json
 import random
+from src.model.entities import Entity
 from src.references.data import DIALOGS
 from src.references.data import INNOCENTS
 
 
-class Innocent:
+class Innocent(Entity):
     available_innocents = list()
 
 
@@ -19,6 +20,7 @@ class Innocent:
            
 
     def __init__(self):
+        self.avoidable = False
         self.name = self.get_new_name()
         self.dialogs = {key:DIALOGS[key] for key in INNOCENTS[self.name]}
 

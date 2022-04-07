@@ -1,8 +1,9 @@
 from enum import auto
-from enum import IntEnum
+from enum import Enum
 
 
-class Entity(IntEnum):
+class Entity(Enum):
     INNOCENT = auto()
-    DOOR = auto()
+    LADDER = auto()
+    WALL = auto()
 
