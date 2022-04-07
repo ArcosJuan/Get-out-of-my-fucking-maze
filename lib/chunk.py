@@ -22,8 +22,6 @@ class Chunk:
         self.positions = positions
         self.index = index
 
-        length = self.length()
-        if length != Chunk.get_length(): Chunk.set_length(length)
 
     
     def greater_than(self, chunk) -> tuple[bool, bool]:

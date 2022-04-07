@@ -8,7 +8,7 @@ from lib.chunk import Chunk
 from lib.position import Position
 from src.model import BiomesManager
 from src.model import Maze
-from src.model.entities import Innocent
+from src.model.entities import Entity 
 from src.controller.event_dispatcher import EventDispatcher as Ed
 from src.references.biome import Biome
 
@@ -121,6 +121,7 @@ class World:
         """
 
         chunk_size = list(min_size)
+        Chunk.set_length(chunk_size)
         for i in range(2):
             while True:
                 if not (size[i]%chunk_size[i]):
@@ -201,13 +202,12 @@ class World:
         seeds = iter(seeds)
         for _ in range(qty):
             position = self.positions.get_element(next(seeds))
-            self.add_entity(position, Maze())
-        pass    
+            self.add_entity(position, Maze())    
 
 
     def generate_spawn_points(self, quantity:int=1) -> set[Position]:
-        """ Returns a Chunk and a Position on that 
-            chunk where to place a charactor.
+        """ Returns a set of positions to place 
+            the given quantity of caractors.
         """
 
         positions = set()
@@ -268,9 +268,8 @@ class World:
 
         elif self.entities.has_node(position): 
             for entity in self.entities.get_adjacencies(position):
-                entity
-                if isinstance(entity, Innocent):
-                    return True
+                if isinstance(entity, Entity):
+                    return entity.get_avoidable()
 
 
         else: return False    
