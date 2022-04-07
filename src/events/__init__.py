@@ -3,7 +3,10 @@ from src.events.event import Event
 from src.events.change_dialog_mode import ChangeDialogMode
 from src.events.dialog_init import DialogInit
 from src.events.end_scene import EndScene
+from src.events.enter_maze import EnterMaze
+from src.events.exit_maze import ExitMaze
 from src.events.game_start import GameStart
+from src.events.interact import Interact
 from src.events.world_generated import WorldGenerated
 from src.events.cell_pressed import CellPressed
 from src.events.point_entity import PointEntity

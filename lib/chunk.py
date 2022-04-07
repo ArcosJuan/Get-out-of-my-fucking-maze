@@ -22,8 +22,7 @@ class Chunk:
         self.positions = positions
         self.index = index
 
-
-    
+ 
     def greater_than(self, chunk) -> tuple[bool, bool]:
         """ Compares the index with another chunk to know
             which one is prior to the other and returns a tuple 

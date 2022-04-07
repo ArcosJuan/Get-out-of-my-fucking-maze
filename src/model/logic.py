@@ -1,14 +1,16 @@
 from src.controller import EventDispatcher as Ed
 from src.events import ArrowKey
+from src.events import EnterMaze
+from src.events import Interact
 from src.events import MoveEntity
 from src.events import MoveCamera
-from src.events import CellPressed
 from src.events import GameStart
 from src.events import PointEntity
 from src.events import WorldGenerated
 from src.model import BiomesManager
 from src.model import Player
 from src.model import World
+from src.model.entities import Entity 
 from src.view import Window
 from src.view.sprites import Sprite
 
@@ -16,6 +18,7 @@ from src.view.sprites import Sprite
 class Logic:
     def __init__(self):
         Ed.add(ArrowKey, self.move_player)
+        Ed.add(Interact, self.interact)
         Ed.add(GameStart, self.game_start)
         self.player: Player = Player()
         self.world: World = None 
@@ -58,3 +61,13 @@ class Logic:
                     (player_position_y, player_position_x),
                     event.get_x(), event.get_y()
                     ))
+
+
+    def interact(self, event):
+        player_position = self.world.get_entity_position(self.player)
+        entities = self.world.get_entity(player_position)
+        if entities: entities = entities[player_position]
+        for entity in entities:
+            if isinstance(entity, Entity):
+                entity.interact()
+

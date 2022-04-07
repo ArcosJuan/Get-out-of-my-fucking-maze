@@ -3,6 +3,7 @@ from src.events import ArrowKey
 from src.events import Click
 from src.events import ChangeDialogMode
 from src.events import PassDialog
+from src.events import Interact
 from src.events import Quit
 from src.events import Tick
 from src.events import Wheel
@@ -25,10 +26,15 @@ class PygameController:
             if event.type == pg.QUIT:
                 Ed.post(Quit())
 
+
             if not self.dialog_mode:
                 if event.type == pg.KEYUP:
                     if event.key in self.arrow_keys_pressed:
                         self.arrow_keys_pressed.pop(event.key)
+
+                    if event.key == pg.K_RETURN:
+                        Ed.post(Interact())
+
 
                 elif event.type == pg.KEYDOWN:
                     if event.key == pg.K_UP: 

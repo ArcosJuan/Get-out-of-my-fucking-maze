@@ -128,6 +128,7 @@ class World:
                     break
                 chunk_size[i] +=1
 
+        Chunk.set_length(chunk_size)
         chunks_amount = (size[0] * size[1]) // (chunk_size[0] * chunk_size[1])
 
         splited_positions = positions.split(chunks_amount)
@@ -269,7 +270,7 @@ class World:
         elif self.entities.has_node(position): 
             for entity in self.entities.get_adjacencies(position):
                 if isinstance(entity, Entity):
-                    return entity.get_avoidable()
+                    return not entity.get_avoidable()
 
 
         else: return False    

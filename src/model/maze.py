@@ -3,6 +3,7 @@ from lib.abstract_data_types import Matrix
 from lib.abstract_data_types import NonDirectionalGraph
 from lib.chunk import Chunk
 from lib.position import Position 
+from src.events import EnterMaze
 from src.events import MoveEntity
 from src.events import WorldUpdated
 from src.controller.event_dispatcher import EventDispatcher as Ed
@@ -64,7 +65,7 @@ class Maze(Entity):
                 self.entities.add_edge((position, entity))
 
     
-  
+    def interact(self): Ed.post(EnterMaze(self))
   
 
     def get_position(self, position_index) -> (Chunk,Position):
@@ -235,7 +236,6 @@ class Maze(Entity):
 
 
         else: return False    
-
 
 
     def get_size(self): return self.positions.length()
