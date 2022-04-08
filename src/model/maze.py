@@ -114,6 +114,21 @@ class Maze(Entity):
         return self.chunks.get_adjacencies(chunk.get_index())
 
 
+    def get_chunk_by_position(self, position) -> Chunk:
+        position_index = list(position.get_index())
+        length = Chunk.get_length()
+
+        chunk_index = (
+            position_index[0] // (length[0]), position_index[1] // (length[1])
+        )
+
+        chunk = self.chunks.get_element(chunk_index)
+
+        if not chunk.has(position): raise KeyError()
+
+        return chunk
+        
+
     def get_adjacent_positions(self, position) -> list:
         """ Returns the list of Position objects 
             adjacent to the one given by parameter.
