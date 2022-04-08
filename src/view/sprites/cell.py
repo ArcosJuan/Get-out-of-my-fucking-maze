@@ -2,16 +2,18 @@ import pygame as pg
 from src.events import CellPressed
 from src.events import Tick
 from src.references import Biome
+from src.references import Tile
 from src.references.images import CELL
 from src.view.sprites.sprite import Sprite
 from src.controller.event_dispatcher import EventDispatcher as Ed
 
 
 class CellSprite(Sprite):
-    native_biomes = {biome:CELL[biome] for biome in Biome}
-    biomes = native_biomes.copy()
+    native_tiles = {biome:CELL[biome] for biome in Biome}
+    native_tiles |= {tile:CELL[tile] for tile in Tile}
+    tiles = native_tiles.copy()
     
-    # native_biomes keep the original size in order to 
+    # native_tiles keep the original size in order to 
     # not to lose image quality.
 
 
@@ -22,23 +24,23 @@ class CellSprite(Sprite):
 
         height = cls.get_actual_size()
 
-        for biome in cls.native_biomes:
-            surface = cls.native_biomes[biome]
+        for tile in cls.native_tiles:
+            surface = cls.native_tiles[tile]
             new_surface = pg.transform.scale(surface,(height,height))
-            cls.biomes[biome]= new_surface
+            cls.tiles[tile]= new_surface
 
 
     @classmethod
-    def get_biome(cls, biome) -> list:
-        """ Returns the list of biomes (Surfaces).
+    def get_tile(cls, tile) -> list:
+        """ Returns the list of tiles (Surfaces).
         """
 
-        return cls.biomes[biome]
+        return cls.tiles[tile]
 
 
-    def __init__(self, position, biome):
-        self.biome = biome
-        self.image = CellSprite.get_biome(biome)
+    def __init__(self, position, tile):
+        self.tile = tile
+        self.image = CellSprite.get_tile(tile)
         self.rect = self.image.get_rect()
 
         Ed.add(Tick, self.routine_update)
@@ -77,7 +79,7 @@ class CellSprite(Sprite):
             in order to update its information (e.g. size).
         """
         
-        self.image = self.get_biome(self.biome)
+        self.image = self.get_tile(self.tile)
         self.rect = self.image.get_rect()
 
     

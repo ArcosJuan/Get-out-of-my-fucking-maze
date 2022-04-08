@@ -2,6 +2,7 @@ from src.events import Tick
 from src.events import PointEntity
 from src.events import WorldUpdated
 from src.events import WorldGenerated
+from src.view.dialog_system.dialog_manager import DialogManager 
 from src.view.scenes import Scene
 from src.references import Layer
 from src.controller.event_dispatcher import EventDispatcher as Ed
@@ -13,6 +14,7 @@ class Game(Scene):
         super().__init__()
         self.world_view = None
         self.camera  = None
+        dialog_manager = DialogManager()
         
         Ed.add(WorldGenerated, self.create_view_objects)
         Ed.add(PointEntity, self.point_entity)

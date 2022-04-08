@@ -3,8 +3,16 @@ import pygame as pg
 import random
 from src.references import images as img
 from src.references import Layer
-from src.model.charactors import Player
+from src.model.entities import Innocent
+from src.model.entities import Ladder
+from src.model.entities import Wall
+from src.model import Maze
+from src.model import Player
+from src.view.sprites import InnocentSprite
+from src.view.sprites import MazeSprite
 from src.view.sprites import PlayerSprite
+from src.view.sprites import LadderSprite
+from src.view.sprites import WallSprite
 
 
 
@@ -13,7 +21,11 @@ class SpriteFactory:
     """
 
     sprite_equivalences = {
-        Player: (Layer.CHARACTOR, PlayerSprite)
+        Maze: (Layer.ENTITY, MazeSprite),
+        Ladder: (Layer.ENTITY, LadderSprite),
+        Wall: (Layer.ENTITY, WallSprite),
+        Player: (Layer.CHARACTOR, PlayerSprite),
+        Innocent: (Layer.CHARACTOR, InnocentSprite),
     }
 
     hue = random.random()
@@ -36,6 +48,10 @@ class SpriteFactory:
         for position in entities:
             for entity in entities[position]:
                 layer, sprite = cls.get_sprite(entity)
-                entity_sprites |= {position: {layer: sprite}}
+                if entity_sprites.get(position): 
+                    entity_sprites[position] |= {layer: sprite}
+                else: 
+                    entity_sprites |= {position: {layer:sprite}}
+                    
 
         return entity_sprites

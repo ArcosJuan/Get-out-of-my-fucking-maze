@@ -1,11 +1,11 @@
 import pygame as pg
 from src.view.sprites import Sprite
-from src.references.images import PLAYER
+from src.references.images import WALL
 
-class PlayerSprite(Sprite):
+class WallSprite(Sprite):
 
     def __init__(self):
-        self.sprite = PLAYER
+        self.sprite = WALL
         self.image = self.sprite
         self.rect = self.image.get_rect()
 
@@ -19,7 +19,7 @@ class PlayerSprite(Sprite):
         """ Scales the image to the given size.
         """
 
-        height = PlayerSprite.get_actual_size()
+        height = WallSprite.get_actual_size()
 
         surface = self.sprite
         self.image = pg.transform.scale(surface,(height,height))

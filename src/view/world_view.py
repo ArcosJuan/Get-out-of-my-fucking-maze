@@ -319,15 +319,18 @@ class WorldView:
         """
 
         for position in positions:
-            entity = self.world_model.get_entity(position)
+            entities = self.world_model.get_entity(position)
 
             # If the position is not being renderized, it's nothing to do.
             if not self.is_renderized(position): continue
 
+
             cell = self.renderized_sprites[position][Layer.CELL]
 
-            if entity:
-                self.renderized_sprites.update(SpriteFactory.translate_entity_dict(entity))
+            if entities:
+                if self.renderized_sprites.get(position) != entities:
+                    self._render_entities([position])
+                self.renderized_sprites.update(SpriteFactory.translate_entity_dict(entities))
                 self.renderized_sprites[position] |= {Layer.CELL: cell}
             
             else:

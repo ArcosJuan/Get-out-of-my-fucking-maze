@@ -1,8 +1,8 @@
 from enum import auto
-from enum import IntEnum
+from enum import Enum
 
 
-class Biome(IntEnum):
+class Biome(Enum):
     DESERT = auto()
     FLOWERED = auto()
     GRASS = auto()

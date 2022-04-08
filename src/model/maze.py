@@ -1,40 +1,72 @@
-import random 
+import random
+from lib.abstract_data_types import Matrix
+from lib.abstract_data_types import NonDirectionalGraph
+from lib.chunk import Chunk
+from lib.position import Position 
+from src.events import EnterMaze
 from src.events import MoveEntity
 from src.events import WorldUpdated
-from lib.abstract_data_types import NonDirectionalGraph
-from lib.abstract_data_types import DirectionalGraph
-from lib.abstract_data_types import Matrix
-from lib.chunk import Chunk
-from lib.position import Position
-from src.model import BiomesManager
-from src.model import Maze
-from src.model.entities import Entity 
 from src.controller.event_dispatcher import EventDispatcher as Ed
-from src.references.biome import Biome
+from src.model import EntityFactory
+from src.model.entities import Entity
+from src.model.entities import Innocent
+from src.model.entities import Ladder
+from src.references.data import MAZES
+from src.references import Tile
 
 
-class World:
-    """ Class that represents the physical space where 
-        are all the characters and buildings of the game
-    """
-    
-    def __init__(self, size:tuple = (128,128), min_size:tuple = (20,30), biomes:int=64):
-        assert biomes <= 128, \
-            "So many biomes take a long time to generate the world"
+class Maze(Entity):
+    available_mazes = list()
+
+
+    @classmethod
+    def get_new_name(cls):
+        if not cls.available_mazes:
+            cls.available_mazes =  [name for name in MAZES.keys()] 
         
-        assert size[0]/2 >= biomes, (
-            "The requested number of biomes" 
-            "is not very suitable for the size of the map"
-        )
+        maze_name = random.choice(cls.available_mazes)
+        cls.available_mazes.remove(maze_name)
+        return maze_name
 
+
+    def __init__(self, min_size:tuple = (40,40)):
+        self.avoidable = True
         Ed.add(MoveEntity, self.move_entity)
 
-        self.size = size
-        self.positions: Matrix = self._generate_positions(size)
-        self.entities = NonDirectionalGraph() # {Position -- Object}
-        self.chunks= self._generate_chunks(min_size, size, self.positions)
-        self.cells = self._generate_cells(self.positions,biomes)
+        self.name = self.get_new_name()
+        self.positions: Matrix = self._generate_positions(min_size)
+        self.entities = NonDirectionalGraph() # {Position -- Object} 
+        self.chunks= self._generate_chunks(min_size, self.positions)
+        self.cells = self._generate_cells(self.positions)
 
+        self._load()
+
+
+    def _load(self):
+        """ Based on the data files, 
+            create the positions, cells and entities of the maze.
+        """
+
+        tile_map = MAZES[self.name][0] # Matrix
+        entity_map = MAZES[self.name][1] # Dict
+
+        size = tile_map.length()
+
+        for position in self.positions:
+            try:
+                self.cells |= {position: tile_map.get_element(position.get_index())}
+            except IndexError:
+                continue
+        
+
+        for position in self.positions:
+            if position.get_index() in entity_map.keys():
+                entity = EntityFactory.get_object(entity_map[position.get_index()])
+                self.entities.add_edge((position, entity))
+
+    
+    def interact(self): Ed.post(EnterMaze(self))
+  
 
     def get_position(self, position_index) -> (Chunk,Position):
         """ Returns the chunk and position 
@@ -115,20 +147,19 @@ class World:
         return list(self.entities.get_adjacencies(entity))[0]
 
 
-    def _generate_chunks(self, min_size:tuple, size:tuple, positions:Matrix) -> Matrix:
+    def _generate_chunks(self, min_size:tuple, positions:Matrix) -> Matrix:
         """ Returns a Matrix of Chunk objects based on a given size 
             (the minimum number of cells that can fit in a Chunk).
         """
 
+        size = min_size
         chunk_size = list(min_size)
-        Chunk.set_length(chunk_size)
         for i in range(2):
             while True:
                 if not (size[i]%chunk_size[i]):
                     break
                 chunk_size[i] +=1
 
-        Chunk.set_length(chunk_size)
         chunks_amount = (size[0] * size[1]) // (chunk_size[0] * chunk_size[1])
 
         splited_positions = positions.split(chunks_amount)
@@ -139,71 +170,12 @@ class World:
         )
 
 
-    def _generate_cells(self, positions:Matrix, biomes_qty=64) -> dict:
+    def _generate_cells(self, positions:Matrix) -> dict:
         """ Receives an iterable of Position type objects and
             generate a dict of Biomes with a position as key.
         """
         
-        rows = sorted({
-            BiomesManager.get_temperature(biome) 
-            for biome in BiomesManager.get_biomes()
-        })
-
-        heat_zones = list()
-        for temperature in rows:
-            heat_zones.append(temperature)
-
-        for temperature in reversed(rows):
-            heat_zones.append(temperature)
-
-        rows_biome = positions.length()[0]/ biomes_qty
-        biomes= dict()
-        for i in range (biomes_qty):
-            biome = BiomesManager.select_random(BiomesManager.get_biomes())
-            temperature = BiomesManager.get_temperature(biome)
-            biomes.setdefault(temperature, list())
-            biomes[temperature].append(biome)
-
-        rows_temperature = {
-            temperature: int((len(biomes[temperature]) * rows_biome) /
-            (heat_zones.count(temperature))) for temperature in biomes
-        }
-        
-        seeds = dict()
-        seeds_index = dict()
-        seed = 1
-        while biomes:
-            start_row = 0
-            stop_row = int(rows_temperature[min(rows_temperature)]-1)
-            for i,temperature in enumerate(heat_zones):
-                if temperature in biomes and biomes[temperature]:
-                    if i != 0:
-                        start_row = stop_row
-                        stop_row += rows_temperature[temperature]
-
-                    row = positions.get_row(
-                        random.randrange(start_row, stop_row)
-                    )
-                    biome = biomes[temperature].pop()
-                    seeds[seed] = biome
-                    seeds_index[seed] = (random.choice(row).get_index())
-                    seed +=1
-
-                else:
-                    if temperature in biomes:
-                        biomes.pop(temperature)
-                    continue
-                    
-        sorted_index = [seeds_index[key] for key in sorted(seeds_index)]
-        zones = iter(positions.generate_voronoi_tesselation(sorted_index))
-        self._generate_mazes(sorted_index, biomes_qty//8)
-        return {position:seeds[next(zones)] for position in positions}
-
-    def _generate_mazes(self, seeds, qty):
-        seeds = iter(seeds)
-        for _ in range(qty):
-            position = self.positions.get_element(next(seeds))
-            self.add_entity(position, Maze())    
+        return {position:Tile.EMPTY for position in positions}
 
 
     def generate_spawn_points(self, quantity:int=1) -> set[Position]:
@@ -211,19 +183,12 @@ class World:
             the given quantity of caractors.
         """
 
-        positions = set()
-        while True:
-            chunk = self.chunks.random()
-            positions = set()
-            for _ in range(quantity):
-                position = chunk.get_random_position()
-                
-                if BiomesManager.get_passable(self.cells[position]):
-                    positions.add(position)
-            
-            if len(positions) == quantity: break
-        
-        return positions
+        for position in self.positions:
+            if self.entities.has_node(position): 
+                for entity in self.entities.get_adjacencies(position):
+                    if isinstance(entity, Ladder):
+                        return {position}
+        return {self.positions.get_element((0,0))}
 
     
     def get_cells(self, positions:iter):
@@ -263,11 +228,8 @@ class World:
     def avoid_position(self, position):
         """ Returns True if it's no problem with pass over a position.
         """
-        
-        if not BiomesManager.get_passable(self.cells[position]): 
-            return True
 
-        elif self.entities.has_node(position): 
+        if self.entities.has_node(position): 
             for entity in self.entities.get_adjacencies(position):
                 if isinstance(entity, Entity):
                     return not entity.get_avoidable()
@@ -276,5 +238,5 @@ class World:
         else: return False    
 
 
-    def get_size(self): return self.size
+    def get_size(self): return self.positions.length()
     
