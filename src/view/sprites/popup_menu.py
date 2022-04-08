@@ -1,9 +1,11 @@
 import pygame as pg
 from src.events import Click
 from src.references.images import DIALOG
+from src.events import Event
 from src.controller.event_dispatcher import EventDispatcher as Ed
 from src.view.sprites import TextBoxSprite
 from src.view.window import Window
+from lib.weak_bound_method import WeakBoundMethod
 
 
 
@@ -13,7 +15,7 @@ class PopupMenu:
 
         # TEXT INITIALIZATION:
         text_height = Window().resolution[1] * text_height_percentage // 100
-        self.options = options # list[string]
+        self.options = options # list[tuple(string, Event/WeakBoundMethod)]
         
         # Text properties:
         self.text_p = {
@@ -80,7 +82,7 @@ class PopupMenu:
         box_size = [None, None]
 
         box_size[0] = \
-            round(round(TextBoxSprite.get_font(self.text_p["height"]).size(max(self.options, key=len))[0] \
+            round(round(TextBoxSprite.get_font(self.text_p["height"]).size(max([option[0] for option in self.options], key=len))[0] \
             / self.box_pieces["topleft"].get_size()[0]) \
             * self.box_pieces["topleft"].get_size()[0]
 )
@@ -162,7 +164,11 @@ class PopupMenu:
     def interact(self, click_event):
         for index in range(len(self.option_sprites)):
             if self.option_sprites[index].get_rect().collidepoint(pg.mouse.get_pos()):
-                pass
+                if isinstance(self.options[index][1], WeakBoundMethod):
+                    self.options[index][1]()
+                elif isinstance(self.options[index][1], Event):
+                    Ed.post(self.options[index][1])
+                
 
 
     def _get_option_sprites(self):
@@ -172,7 +178,7 @@ class PopupMenu:
         option_sprites = []
 
         for index in range(1, len(self.options) + 1):
-            option_sprite = TextBoxSprite(self.options[index - 1], self.text_p["height"], self.text_p["dcolor"])
+            option_sprite = TextBoxSprite(self.options[index - 1][0], self.text_p["height"], self.text_p["dcolor"])
             option_sprite.get_rect().centerx = self.box_rect.centerx
             divition = round(self.box_rect.height / len(self.options))
             
