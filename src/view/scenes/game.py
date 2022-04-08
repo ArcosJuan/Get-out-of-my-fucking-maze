@@ -1,5 +1,7 @@
 from src.events import Tick
+from src.events import EnterMaze
 from src.events import PointEntity
+from src.events import ViewChanged
 from src.events import WorldUpdated
 from src.events import WorldGenerated
 from src.view.dialog_system.dialog_manager import DialogManager 
@@ -19,15 +21,17 @@ class Game(Scene):
         Ed.add(WorldGenerated, self.create_view_objects)
         Ed.add(PointEntity, self.point_entity)
         Ed.add(WorldUpdated, self.update_sprites)
+        Ed.add(EnterMaze, self.create_view_objects)
 
 
     def create_view_objects(self, event):
         from src.view import WorldView
         from src.view import Camera
 
-        self.world_view = WorldView(event.get_world())
+        actual_place = event.get_maze() if hasattr(event, 'get_maze') else event.get_world()
+        self.world_view = WorldView(actual_place)
         self.camera = Camera(self.world_view)
-
+        Ed.post(ViewChanged())
 
     def point_entity(self, event):
         chunks = self.world_view.get_adjacent_chunks([event.get_chunk()])
@@ -53,3 +57,4 @@ class Game(Scene):
                 # camera will not care about update sprites.
                 if self.camera.is_visible(position):
                     self.camera.update_visible_sprites({position: sprites[position]})
+

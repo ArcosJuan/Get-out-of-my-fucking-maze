@@ -14,6 +14,7 @@ from src.events.interact import Interact
 from src.events.move_camera import MoveCamera
 from src.events.update_resolution import UpdateResolution
 from src.events.move_entity import MoveEntity
+from src.events.view_changed import ViewChanged
 from src.events.world_updated import WorldUpdated
 
 # Pygame events:
