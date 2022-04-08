@@ -1,17 +1,22 @@
 import pygame as pg
+from src.events import ArrowKey
+from src.events import Interact
 from src.events import Click
+from src.events import Tick
 from src.references.images import DIALOG
 from src.events import Event
 from src.controller.event_dispatcher import EventDispatcher as Ed
 from src.view.sprites import TextBoxSprite
 from src.view.window import Window
-from lib.weak_bound_method import WeakBoundMethod
+from lib.weak_bound_method import WeakBoundMethod as Wbm
 
 
 
 class PopupMenu:
     def __init__(self, options, box_position=(0,0), min_size = 20, max_size = 30, text_height_percentage=5, text_default_color=(255,0,0), text_active_color = (0,255,0)):
-        Ed.add(Click, self.interact)
+        Ed.add(Tick, self.draw)
+        Ed.add_exclusive_listener(Interact, self.interact)
+        Ed.add_exclusive_listener(ArrowKey, self.move_option)
 
         # TEXT INITIALIZATION:
         text_height = Window().resolution[1] * text_height_percentage // 100
@@ -34,6 +39,7 @@ class PopupMenu:
         self.box_rect.topleft = box_position
 
         self.option_sprites = self._get_option_sprites()
+        self.index = 0
 
 
     def set_box_proportions(self, min_size, max_size):
@@ -85,7 +91,7 @@ class PopupMenu:
             round(round(TextBoxSprite.get_font(self.text_p["height"]).size(max([option[0] for option in self.options], key=len))[0] \
             / self.box_pieces["topleft"].get_size()[0]) \
             * self.box_pieces["topleft"].get_size()[0]
-)
+        )
         box_size[1] = \
             round(self.text_p["height"] \
             * len(self.options) \
@@ -144,31 +150,41 @@ class PopupMenu:
                 box_image.blit(self.box_pieces["center"], (x,y))
 
         return box_image
-    
-    
-    def update(self):
-        for index in range(len(self.option_sprites)):
-            if self.option_sprites[index].get_rect().collidepoint(pg.mouse.get_pos()):
-                self.option_sprites[index].change_color(self.text_p["acolor"])
-            else:
-                self.option_sprites[index].change_color(self.text_p["dcolor"])
 
 
-    def draw(self, surface = None):
-        self.update()
+    def draw(self, event, surface = None):
         (surface if surface else Window().surface).blit(self.box_image, self.box_rect)    
         
         for option_sprite in self.option_sprites:
             option_sprite.draw()
 
-    def interact(self, click_event):
-        for index in range(len(self.option_sprites)):
-            if self.option_sprites[index].get_rect().collidepoint(pg.mouse.get_pos()):
-                if isinstance(self.options[index][1], WeakBoundMethod):
-                    self.options[index][1]()
-                elif isinstance(self.options[index][1], Event):
-                    Ed.post(self.options[index][1])
-                
+
+    def move_option(self, arrow_event):
+        for option_sprite in self.option_sprites:
+            option_sprite.change_color(self.text_p["dcolor"])
+
+        if arrow_event.get_y() == 1:
+            if self.index > 0:
+                self.index -= 1
+            else: self.index = len(self.options) - 1
+        elif arrow_event.get_y() == -1:
+            if self.index < len(self.options) - 1:
+                self.index  += 1
+            else: self.index = 0
+
+        self.option_sprites[self.index].change_color(self.text_p["acolor"])
+
+
+    def interact(self, interact_event):
+        if isinstance(self.options[self.index][1], Wbm):
+            self.options[self.index][1]()
+        elif isinstance(self.options[self.index][1], Event):
+            Ed.post(self.options[self.index][1])
+    
+
+    def __del__(self):
+        Ed.remove_exclusive_listener(ArrowKey, self.move_option)
+        Ed.remove_exclusive_listener(Interact, self.interact)
 
 
     def _get_option_sprites(self):

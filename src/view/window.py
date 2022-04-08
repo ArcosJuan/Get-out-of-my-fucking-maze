@@ -48,7 +48,6 @@ class Window(metaclass=Singleton):
         self.surface = pg.display.set_mode(self.resolution, flags)        
 
 
-
     def update(self, event):
         """ Update the display and draw the background.
         """
