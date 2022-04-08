@@ -29,17 +29,36 @@ class Maze(Entity):
         return maze_name
 
 
-    def __init__(self, min_size:tuple = (40,40)):
+    def __init__(self):
         self.avoidable = True
         Ed.add(MoveEntity, self.move_entity)
 
         self.name = self.get_new_name()
-        self.positions: Matrix = self._generate_positions(min_size)
+        size = self._calculate_size()
+        self.positions: Matrix = self._generate_positions(size)
         self.entities = NonDirectionalGraph() # {Position -- Object} 
-        self.chunks= self._generate_chunks(min_size, self.positions)
+        self.chunks= self._generate_chunks(size, self.positions)
         self.cells = self._generate_cells(self.positions)
 
         self._load()
+
+
+    def _calculate_size(self):
+        """ Based on the size of the map to be loaded, 
+            and the size of the chunks returns the size 
+            that the position matrix should have.
+        """
+
+        chunk_size = list(Chunk.get_length())
+        map_size = list(MAZES[self.name][0].length())
+        min_size = list((max(chunk_size[0], map_size[0]), max(chunk_size[1], map_size[1])))
+        for i in range(2):
+            while True:
+                if not (min_size[i]%chunk_size[i]):
+                    break
+                min_size[i] +=1
+
+        return min_size
 
 
     def _load(self):
@@ -152,13 +171,8 @@ class Maze(Entity):
             (the minimum number of cells that can fit in a Chunk).
         """
 
-        size = min_size
-        chunk_size = list(min_size)
-        for i in range(2):
-            while True:
-                if not (size[i]%chunk_size[i]):
-                    break
-                chunk_size[i] +=1
+        size = positions.length()
+        chunk_size = Chunk.get_length()
 
         chunks_amount = (size[0] * size[1]) // (chunk_size[0] * chunk_size[1])
 
