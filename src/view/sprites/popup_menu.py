@@ -3,6 +3,7 @@ from src.events import ArrowKey
 from src.events import Interact
 from src.events import Click
 from src.events import Tick
+from src.events import UpdateResolution
 from src.references.images import DIALOG
 from src.events import Event
 from src.controller.event_dispatcher import EventDispatcher as Ed
@@ -13,33 +14,69 @@ from lib.weak_bound_method import WeakBoundMethod as Wbm
 
 
 class PopupMenu:
-    def __init__(self, options, box_position=(0,0), min_size = 20, max_size = 30, text_height_percentage=5, text_default_color=(255,0,0), text_active_color = (0,255,0)):
+    box_pieces = {"topleft": DIALOG["TOPLEFT"], "top": DIALOG["TOP"], "center": DIALOG["CENTER"]}
+    
+    def __init__(self, options, box_relative_pos=(1/2,1/2), min_size = 20, max_size = 30, txt_a_pct=5, text_default_color=(255,0,0), text_active_color = (0,255,0)):
+        Ed.add(Interact, self.interact)
         Ed.add(Tick, self.draw)
-        Ed.add_exclusive_listener(Interact, self.interact)
+        Ed.add(UpdateResolution, self.update_size)
+        
         Ed.add_exclusive_listener(ArrowKey, self.move_option)
+        Ed.add_exclusive_listener(Interact, self.interact)
 
         # TEXT INITIALIZATION:
-        text_height = Window().resolution[1] * text_height_percentage // 100
+        self.txt_a_pct = txt_a_pct
         self.options = options # list[tuple(string, Event/WeakBoundMethod)]
         
         # Text properties:
         self.text_p = {
-            'height': text_height,
+            'height': self._get_text_height(),
             'dcolor': text_default_color,
             'acolor': text_active_color
         }
         
         # BOX INITIALIZATION:
-        self.box_pieces = {"topleft": DIALOG["TOPLEFT"], "top": DIALOG["TOP"], "center": DIALOG["CENTER"]}
+        self.box_relative_pos = box_relative_pos
+        self.max_size, self.min_size = max_size, min_size
         self.validate_window_size()
-        self.set_box_proportions(min_size, max_size)
         
-        self.box_image = self._create_box_image()
-        self.box_rect = self.box_image.get_rect()
-        self.box_rect.topleft = box_position
-
+        self._box_sprite_init()
+        
         self.option_sprites = self._get_option_sprites()
         self.index = 0
+        self.option_sprites[self.index].change_color(self.text_p["acolor"])
+
+
+    def _get_text_height(self):
+        return int(
+                (
+                    self.txt_a_pct*(Window().resolution[0]
+                    *Window().resolution[1])/100
+                )**(1/2)
+            )
+
+
+    def _box_sprite_init(self):
+        self.set_box_proportions(self.min_size, self.max_size)
+        self.box_image = self._create_box_image()
+        self.box_rect = self.box_image.get_rect()
+        self._set_relative_position()
+
+
+    def _set_relative_position(self):
+        self.box_rect.center = (
+            Window().resolution[0] * self.box_relative_pos[0],
+            Window().resolution[1] * self.box_relative_pos[1]
+        )
+
+
+    def update_size(self, event):
+        self.text_p["height"] = self._get_text_height()
+
+        self._box_sprite_init()
+        
+        self.option_sprites = self._get_option_sprites()
+        self.option_sprites[self.index].change_color(self.text_p["acolor"])
 
 
     def set_box_proportions(self, min_size, max_size):
@@ -74,14 +111,8 @@ class PopupMenu:
         box_min_size[1] += self.box_pieces["top"].get_size()[1] * 2
 
         if Window().resolution[0] < box_min_size[0] \
-            or Window().resolution[1] // 3 < box_min_size[1]:
-            raise AssertionError(
-            f"Current Window resolution cannot show dialogue box properly.\n"
-                + "Window witdh needs to be larger or equal than"
-                + f" {box_min_size[0]} and the"
-                + "third part of the height larger or equal than"
-                + f" {box_min_size[1]}."
-            )
+            or Window().resolution[1] < box_min_size[1]:
+            raise AssertionError("Current Window resolution cannot show dialogue box properly")
 
 
     def get_box_size(self):
