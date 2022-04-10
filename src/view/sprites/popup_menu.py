@@ -1,39 +1,82 @@
 import pygame as pg
+from src.events import ArrowKey
+from src.events import Interact
 from src.events import Click
+from src.events import Tick
+from src.events import UpdateResolution
 from src.references.images import DIALOG
 from src.events import Event
 from src.controller.event_dispatcher import EventDispatcher as Ed
 from src.view.sprites import TextBoxSprite
 from src.view.window import Window
-from lib.weak_bound_method import WeakBoundMethod
+from lib.weak_bound_method import WeakBoundMethod as Wbm
 
 
 
 class PopupMenu:
-    def __init__(self, options, box_position=(0,0), min_size = 20, max_size = 30, text_height_percentage=5, text_default_color=(255,0,0), text_active_color = (0,255,0)):
-        Ed.add(Click, self.interact)
+    box_pieces = {"topleft": DIALOG["TOPLEFT"], "top": DIALOG["TOP"], "center": DIALOG["CENTER"]}
+    
+    def __init__(self, options, box_relative_pos=(1/2,1/2), min_size = 20, max_size = 30, txt_a_pct=5, text_default_color=(255,0,0), text_active_color = (0,255,0)):
+        Ed.add(Interact, self.interact)
+        Ed.add(Tick, self.draw)
+        Ed.add(UpdateResolution, self.update_size)
+        
+        Ed.add_exclusive_listener(ArrowKey, self.move_option)
+        Ed.add_exclusive_listener(Interact, self.interact)
 
         # TEXT INITIALIZATION:
-        text_height = Window().resolution[1] * text_height_percentage // 100
+        self.txt_a_pct = txt_a_pct
         self.options = options # list[tuple(string, Event/WeakBoundMethod)]
         
         # Text properties:
         self.text_p = {
-            'height': text_height,
+            'height': self._get_text_height(),
             'dcolor': text_default_color,
             'acolor': text_active_color
         }
         
         # BOX INITIALIZATION:
-        self.box_pieces = {"topleft": DIALOG["TOPLEFT"], "top": DIALOG["TOP"], "center": DIALOG["CENTER"]}
+        self.box_relative_pos = box_relative_pos
+        self.max_size, self.min_size = max_size, min_size
         self.validate_window_size()
-        self.set_box_proportions(min_size, max_size)
         
+        self._box_sprite_init()
+        
+        self.option_sprites = self._get_option_sprites()
+        self.index = 0
+        self.option_sprites[self.index].change_color(self.text_p["acolor"])
+
+
+    def _get_text_height(self):
+        return int(
+                (
+                    self.txt_a_pct*(Window().resolution[0]
+                    *Window().resolution[1])/100
+                )**(1/2)
+            )
+
+
+    def _box_sprite_init(self):
+        self.set_box_proportions(self.min_size, self.max_size)
         self.box_image = self._create_box_image()
         self.box_rect = self.box_image.get_rect()
-        self.box_rect.topleft = box_position
+        self._set_relative_position()
 
+
+    def _set_relative_position(self):
+        self.box_rect.center = (
+            Window().resolution[0] * self.box_relative_pos[0],
+            Window().resolution[1] * self.box_relative_pos[1]
+        )
+
+
+    def update_size(self, event):
+        self.text_p["height"] = self._get_text_height()
+
+        self._box_sprite_init()
+        
         self.option_sprites = self._get_option_sprites()
+        self.option_sprites[self.index].change_color(self.text_p["acolor"])
 
 
     def set_box_proportions(self, min_size, max_size):
@@ -68,14 +111,8 @@ class PopupMenu:
         box_min_size[1] += self.box_pieces["top"].get_size()[1] * 2
 
         if Window().resolution[0] < box_min_size[0] \
-            or Window().resolution[1] // 3 < box_min_size[1]:
-            raise AssertionError(
-            f"Current Window resolution cannot show dialogue box properly.\n"
-                + "Window witdh needs to be larger or equal than"
-                + f" {box_min_size[0]} and the"
-                + "third part of the height larger or equal than"
-                + f" {box_min_size[1]}."
-            )
+            or Window().resolution[1] < box_min_size[1]:
+            raise AssertionError("Current Window resolution cannot show dialogue box properly")
 
 
     def get_box_size(self):
@@ -85,7 +122,7 @@ class PopupMenu:
             round(round(TextBoxSprite.get_font(self.text_p["height"]).size(max([option[0] for option in self.options], key=len))[0] \
             / self.box_pieces["topleft"].get_size()[0]) \
             * self.box_pieces["topleft"].get_size()[0]
-)
+        )
         box_size[1] = \
             round(self.text_p["height"] \
             * len(self.options) \
@@ -144,31 +181,41 @@ class PopupMenu:
                 box_image.blit(self.box_pieces["center"], (x,y))
 
         return box_image
-    
-    
-    def update(self):
-        for index in range(len(self.option_sprites)):
-            if self.option_sprites[index].get_rect().collidepoint(pg.mouse.get_pos()):
-                self.option_sprites[index].change_color(self.text_p["acolor"])
-            else:
-                self.option_sprites[index].change_color(self.text_p["dcolor"])
 
 
-    def draw(self, surface = None):
-        self.update()
+    def draw(self, event, surface = None):
         (surface if surface else Window().surface).blit(self.box_image, self.box_rect)    
         
         for option_sprite in self.option_sprites:
             option_sprite.draw()
 
-    def interact(self, click_event):
-        for index in range(len(self.option_sprites)):
-            if self.option_sprites[index].get_rect().collidepoint(pg.mouse.get_pos()):
-                if isinstance(self.options[index][1], WeakBoundMethod):
-                    self.options[index][1]()
-                elif isinstance(self.options[index][1], Event):
-                    Ed.post(self.options[index][1])
-                
+
+    def move_option(self, arrow_event):
+        for option_sprite in self.option_sprites:
+            option_sprite.change_color(self.text_p["dcolor"])
+
+        if arrow_event.get_y() == 1:
+            if self.index > 0:
+                self.index -= 1
+            else: self.index = len(self.options) - 1
+        elif arrow_event.get_y() == -1:
+            if self.index < len(self.options) - 1:
+                self.index  += 1
+            else: self.index = 0
+
+        self.option_sprites[self.index].change_color(self.text_p["acolor"])
+
+
+    def interact(self, interact_event):
+        if isinstance(self.options[self.index][1], Wbm):
+            self.options[self.index][1]()
+        elif isinstance(self.options[self.index][1], Event):
+            Ed.post(self.options[self.index][1])
+    
+
+    def __del__(self):
+        Ed.remove_exclusive_listener(ArrowKey, self.move_option)
+        Ed.remove_exclusive_listener(Interact, self.interact)
 
 
     def _get_option_sprites(self):

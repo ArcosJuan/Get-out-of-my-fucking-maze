@@ -1,7 +1,7 @@
 import pygame as pg
 from src.events import ArrowKey
 from src.events import Click
-from src.events import ChangeDialogMode
+from src.events import Interact
 from src.events import PassDialog
 from src.events import Interact
 from src.events import Quit
@@ -17,8 +17,7 @@ class PygameController:
 
     def __init__(self):
         Ed.add(Tick, self.iterate_events)
-        Ed.add(ChangeDialogMode, self.change_dialog_mode)
-        self.dialog_mode = False
+        self._mode = 0 # 0: Default, 1: Dialog, 2: PopupMenu
         self.arrow_keys_pressed = dict()
 
     def iterate_events(self, event):
@@ -26,40 +25,26 @@ class PygameController:
             if event.type == pg.QUIT:
                 Ed.post(Quit())
 
-
-            if not self.dialog_mode:
-                if event.type == pg.KEYUP:
-                    if event.key in self.arrow_keys_pressed:
-                        self.arrow_keys_pressed.pop(event.key)
-
-                    if event.key == pg.K_RETURN:
-                        Ed.post(Interact())
-
-
-                elif event.type == pg.KEYDOWN:
-                    if event.key == pg.K_UP: 
-                        self.arrow_keys_pressed[event.key] = ArrowKey(y=1)
-                    if event.key == pg.K_DOWN: 
-                        self.arrow_keys_pressed[event.key] = ArrowKey(y=-1)
-                    if event.key == pg.K_RIGHT: 
-                        self.arrow_keys_pressed[event.key] = ArrowKey(x=1)
-                    if event.key == pg.K_LEFT: 
-                        self.arrow_keys_pressed[event.key] = ArrowKey(x=-1)
+            elif event.type == pg.KEYUP:
+                if event.key == pg.K_UP: 
+                    Ed.post(ArrowKey(y=1))
+                elif event.key == pg.K_DOWN: 
+                    Ed.post(ArrowKey(y=-1))
+                elif event.key == pg.K_RIGHT: 
+                    Ed.post(ArrowKey(x=1))
+                elif event.key == pg.K_LEFT: 
+                    Ed.post(ArrowKey(x=-1)) 
                     
+                elif event.key == pg.K_RETURN: 
+                    Ed.post(Interact())
 
-                elif event.type == pg.MOUSEBUTTONUP:
-                    Ed.post(Click(event.pos, event.button))
-                
-            else: 
+            elif event.type == pg.MOUSEBUTTONUP:
+                Ed.post(Click(event.pos, event.button))
+            
+
+            elif self._mode == 1: 
                 if event.type == pg.KEYUP:
                     if event.key == pg.K_n:
                         Ed.post(PassDialog())
 
-
-                
-        if self.arrow_keys_pressed: 
-            [Ed.post(event) for event in self.arrow_keys_pressed.values()]
-
-    
-    def change_dialog_mode(self, event):
-        self.dialog_mode = not self.dialog_mode
+            

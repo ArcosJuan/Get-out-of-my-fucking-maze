@@ -1,6 +1,6 @@
 from src.events import Event
 
 
-class ChangeDialogMode(Event):
+class UpdateResolution(Event):
     def __init__(self):
         super().__init__()

@@ -1,4 +1,5 @@
 from lib.weak_bound_method import WeakBoundMethod as Wbm
+from src.events import Interact
 
 
 class EventDispatcher:
@@ -9,6 +10,7 @@ class EventDispatcher:
     # Contains event classes and the object method 
     # subscribed to said event.
     listeners = dict()
+    exclusive_listeners = dict() # {event: [listener]}
 
     @classmethod
     def add(cls, eventcls, listener):
@@ -40,5 +42,27 @@ class EventDispatcher:
         """
 
         if cls.listeners.get(event.__class__, False):
-            for listener in cls.listeners[event.__class__]:
-                listener(event)
+            if event.__class__ in cls.exclusive_listeners:
+                el = cls.exclusive_listeners[event.__class__].copy()
+                for listener in el:
+                    listener(event)
+
+            else:
+                l = cls.listeners[event.__class__].copy()
+                for listener in l:
+                    listener(event)
+                    
+
+
+    @classmethod
+    def add_exclusive_listener(cls, eventcls, listener):
+        listener = Wbm(listener)
+        cls.exclusive_listeners.setdefault(eventcls, list()).append(listener)
+
+
+    @classmethod
+    def remove_exclusive_listener(cls, eventcls, listener):
+        if eventcls in cls.exclusive_listeners:
+            cls.exclusive_listeners[eventcls].remove(listener)
+            if not cls.exclusive_listeners[eventcls]:
+                cls.exclusive_listeners.pop(eventcls)

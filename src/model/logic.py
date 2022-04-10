@@ -20,8 +20,9 @@ class Logic:
         Ed.add(ArrowKey, self.move_player)
         Ed.add(Interact, self.interact)
         Ed.add(GameStart, self.game_start)
+
         self.player: Player = Player()
-        self.world: World = None 
+        self.world: World = None
 
 
     def game_start(self, event):
