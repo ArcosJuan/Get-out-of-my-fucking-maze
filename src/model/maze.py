@@ -52,6 +52,7 @@ class Maze(Map, Entity):
 
         chunk_size = list(Chunk.get_length())
         map_size = list(MAZES[self.name][0].length())
+        map_size = [size*2 for size in map_size]
         min_size = list((max(chunk_size[0], map_size[0]), max(chunk_size[1], map_size[1])))
         for i in range(2):
             while True:
@@ -71,18 +72,21 @@ class Maze(Map, Entity):
         entity_map = MAZES[self.name][1] # Dict
 
         size = tile_map.length()
+        center_pos = self.positions.get_center()
 
-        for position in self.positions:
+        for pos in self.positions:
+            corrected_index = (center_pos.y + pos.y, center_pos.x + pos.x) 
             try:
-                self.cells |= {position: tile_map.get_element(position.get_index())}
+                corrected_pos = self.positions.get_element(corrected_index)
+            
+                if pos.get_index() in entity_map.keys():
+                    entity = EntityFactory.get_object(entity_map[pos.get_index()])
+                    self.entities.add_edge((corrected_pos, entity))
+            
+                self.cells |= {corrected_pos: tile_map.get_element(pos.get_index())}
             except IndexError:
                 continue
         
-
-        for position in self.positions:
-            if position.get_index() in entity_map.keys():
-                entity = EntityFactory.get_object(entity_map[position.get_index()])
-                self.entities.add_edge((position, entity))
 
     
     def interact(self): Ed.post(EnterMaze(self))
