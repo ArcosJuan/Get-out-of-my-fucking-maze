@@ -1,9 +1,9 @@
 from src.events import Tick
 from src.events import EnterMaze
 from src.events import ExitMaze
+from src.events import MapUpdated
 from src.events import PointEntity
 from src.events import ViewChanged
-from src.events import WorldUpdated
 from src.events import WorldGenerated
 from src.view.dialog_system.dialog_manager import DialogManager 
 from src.view.scenes import Scene
@@ -22,7 +22,7 @@ class Game(Scene):
         
         Ed.add(WorldGenerated, self.create_world_view)
         Ed.add(PointEntity, self.point_entity)
-        Ed.add(WorldUpdated, self.update_sprites)
+        Ed.add(MapUpdated, self.update_sprites)
         Ed.add(EnterMaze, self.load_maze)
         Ed.add(ExitMaze, self.load_world)
 

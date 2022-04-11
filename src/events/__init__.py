@@ -15,7 +15,7 @@ from src.events.move_camera import MoveCamera
 from src.events.update_resolution import UpdateResolution
 from src.events.move_entity import MoveEntity
 from src.events.view_changed import ViewChanged
-from src.events.world_updated import WorldUpdated
+from src.events.map_updated import MapUpdated
 
 # Pygame events:
 from src.events.pygame_events.tick import Tick
