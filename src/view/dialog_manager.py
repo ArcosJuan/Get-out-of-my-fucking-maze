@@ -1,12 +1,11 @@
-from src.events import ChangeDialogMode
 from src.events import DialogInit
 from src.events import PassDialog
 from src.events import Tick
-from src.controller.chronometer import Chronometer
-from src.view.sprites.dialog_box import DialogBoxSprite
-from src.controller.event_dispatcher import EventDispatcher as Ed
-from src.view.sprites.simple_sprite import SimpleSprite
+from src.controller import Chronometer
+from src.controller import EventDispatcher as Ed
 from src.references.images import PRESS_N
+from src.view.sprites import DialogBoxSprite
+from src.view.sprites.simple_sprite import SimpleSprite
 from src.view.window import Window
 
 
@@ -35,7 +34,7 @@ class DialogManager:
         for dialogue in event.get_dialogues():
             self.dialogues.extend(self.dialog_box.adjust_text(dialogue))
 
-        Ed.post(ChangeDialogMode())
+        Ed.post(ChangeMode(1))
         Ed.add(Tick, self.update)
 
         self.pass_dialog(PassDialog())
@@ -46,7 +45,7 @@ class DialogManager:
             self.dialog_box.set_text(self.dialogues.pop(0))
 
         else:
-            Ed.post(ChangeDialogMode())
+            Ed.post(ChangeMode(0))
             Ed.remove(Tick, self.update)
 
 

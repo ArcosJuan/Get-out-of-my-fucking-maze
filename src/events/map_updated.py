@@ -1,7 +1,7 @@
 from src.events import Event
 
 
-class WorldUpdated(Event):
+class MapUpdated(Event):
     def __init__(self, positions: list):
         """ Recives the updated positions.
         """

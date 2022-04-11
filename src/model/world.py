@@ -1,19 +1,19 @@
 import random 
-from src.events import MoveEntity
-from src.events import WorldUpdated
 from lib.abstract_data_types import NonDirectionalGraph
-from lib.abstract_data_types import DirectionalGraph
 from lib.abstract_data_types import Matrix
 from lib.chunk import Chunk
 from lib.position import Position
+from src.controller import EventDispatcher as Ed
+from src.events import MapUpdated
+from src.events import MoveEntity
 from src.model import BiomesManager
+from src.model import Map
 from src.model import Maze
-from src.model.entities import Entity 
-from src.controller.event_dispatcher import EventDispatcher as Ed
+from src.model.entities import Entity
 from src.references.biome import Biome
 
 
-class World:
+class World(Map):
     """ Class that represents the physical space where 
         are all the characters and buildings of the game
     """
@@ -32,90 +32,12 @@ class World:
         self.size = size
         self.positions: Matrix = self._generate_positions(size)
         self.entities = NonDirectionalGraph() # {Position -- Object}
-        self.chunks= self._generate_chunks(min_size, size, self.positions)
+        self.chunks= self._generate_chunks(min_size, self.positions, size)
         self.cells = self._generate_cells(self.positions,biomes)
 
 
-    def get_position(self, position_index) -> (Chunk,Position):
-        """ Returns the chunk and position 
-            object that match with the given position index.
-        """
-        
-        position = self.positions.get_element(position_index)
-        length = Chunk.get_length()
 
-        chunk_index = (
-            position_index[0] // (length[0]), position_index[1] // (length[1])
-        )
-
-        chunk = self.chunks.get_element(chunk_index)
-
-        if not chunk.has(position): raise KeyError()
-
-        return (chunk, position)
-
-
-    def get_adjacent_chunks(self, chunk) -> list:
-        """ Returns the list of Chunk objects 
-            adjacent to the one given by parameter.
-        """
-
-        return self.chunks.get_adjacencies(chunk.get_index())
-
-
-    def get_adjacent_positions(self, position) -> list:
-        """ Returns the list of Position objects 
-            adjacent to the one given by parameter.
-        """
-
-        return self.positions.get_adjacencies(self.positions.index(position))
-
-
-    def get_limit(self) -> Position:
-        """ Returns the last Position in the world.
-        """
-
-        index = self.positions.get_last_index()
-        return self.positions.get_element(index)
-
-
-    def _generate_positions(self, size:tuple) -> Matrix:
-        """ Generates a Matrix of Position type objects 
-            based on the given size.
-        """
-
-        return Matrix(
-            Position.create_collection((0,0), (size[0] -1 ,size[1] -1))
-        )
-
-
-    def add_entity(self, position, entity):
-        self.entities.add_edge((position, entity))
-
-
-    def get_entities(self, positions: list):
-        entities = dict()
-        entities |= {
-            position: self.entities.get_adjacencies(position)
-            for position in positions
-            if self.entities.has_node(position)
-            }
-            
-        return entities
-
-
-    def get_entity(self, position):
-        if self.entities.has_node(position):
-            return {position: self.entities.get_adjacencies(position)}
-
-        else: return None
-
-
-    def get_entity_position(self, entity):
-        return list(self.entities.get_adjacencies(entity))[0]
-
-
-    def _generate_chunks(self, min_size:tuple, size:tuple, positions:Matrix) -> Matrix:
+    def _generate_chunks(self, min_size:tuple, positions:Matrix, size:tuple) -> Matrix:
         """ Returns a Matrix of Chunk objects based on a given size 
             (the minimum number of cells that can fit in a Chunk).
         """
@@ -199,6 +121,7 @@ class World:
         self._generate_mazes(sorted_index, biomes_qty//8)
         return {position:seeds[next(zones)] for position in positions}
 
+
     def _generate_mazes(self, seeds, qty):
         seeds = iter(seeds)
         for _ in range(qty):
@@ -225,40 +148,6 @@ class World:
         
         return positions
 
-    
-    def get_cells(self, positions:iter):
-        """ Return a dict of biomes with Positions
-            as keys based on self.cells.
-        """
-
-        return {position:self.cells[position] for position in positions}
-        
-
-    def move_entity(self, event):
-        """ Moves an entity to another position.
-            Recives an event with an entity and it's destination.
-        """
-        if  self.avoid_position(event.get_destination()):
-            return False
-
-        entity = event.get_entity()
-        
-        # Saves the position of ther charactor.
-        past_position = list(self.entities.get_adjacencies(entity))[0]
-        
-        # Removes the position of ther charactor and the charactor 
-        # from the entities graph.
-        self.entities.remove_node(entity)
-        self.entities.remove_empty_nodes()
-
-        # Creates an edge between the charactor and the destination 
-        # position in the graph.
-        self.entities.add_edge((entity, event.get_destination()))
-        
-        Ed.post(WorldUpdated([past_position, event.get_destination()]))
-
-        return True 
-
 
     def avoid_position(self, position):
         """ Returns True if it's no problem with pass over a position.
@@ -276,5 +165,4 @@ class World:
         else: return False    
 
 
-    def get_size(self): return self.size
     

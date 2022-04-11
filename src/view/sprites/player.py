@@ -1,6 +1,6 @@
 import pygame as pg
-from src.view.sprites import Sprite
 from src.references.images import PLAYER
+from src.view.sprites import Sprite
 
 class PlayerSprite(Sprite):
 

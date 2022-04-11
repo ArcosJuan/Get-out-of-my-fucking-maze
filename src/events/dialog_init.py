@@ -8,4 +8,4 @@ class DialogInit(Event):
         self.dialogues = DIALOGS.get(dialog_id)
 
     
-    def get_dialogues(self): return self.dialogues
+    def get_dialogues(self) -> list: return self.dialogues

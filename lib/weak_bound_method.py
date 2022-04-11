@@ -6,12 +6,19 @@ class WeakBoundMethod:
         of a class into a weak reference.
     """
 
-    def __init__(self, meth):
+    def __init__(self, meth, *args, **kwargs):
+        self._args = args
+        self._kwargs = kwargs
         self._self = weakref.ref(meth.__self__)
         self._func = meth.__func__
 
 
     def __call__(self, *args, **kwargs):
+        
+        if self._args or self._kwargs:
+            args = self._args
+            kwargs = self._kwargs
+
         if not self._self() is None:
             self._func(self._self(), *args, **kwargs)
 

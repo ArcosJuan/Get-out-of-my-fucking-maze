@@ -1,5 +1,7 @@
 import pygame as pg
 from lib.singleton import Singleton
+from src.controller import EventDispatcher as Ed
+from src.events import UpdateResolution
 
 
 class Window(metaclass=Singleton):
@@ -19,6 +21,8 @@ class Window(metaclass=Singleton):
         self.background = (0,0,0)
 
 
+    def get_display_size(self): return self._display_size
+
     @property
     def surface(self): 
         return self._surface
@@ -37,7 +41,8 @@ class Window(metaclass=Singleton):
     @resolution.setter
     def resolution(self, new_resolution, flags=0):
         try:
-            assert new_resolution <= self._display_size, \
+            assert new_resolution[0] <= self._display_size[0] \
+            and new_resolution[1] <= self._display_size[1] , \
                 "The resolution is too large!"
 
             self._resolution = new_resolution
@@ -46,7 +51,7 @@ class Window(metaclass=Singleton):
             self._resolution = new_resolution
 
         self.surface = pg.display.set_mode(self.resolution, flags)        
-
+        Ed.post(UpdateResolution())
 
 
     def update(self, event):

@@ -3,17 +3,27 @@ from lib.abstract_data_types import Matrix
 from lib.abstract_data_types import NonDirectionalGraph
 from lib.chunk import Chunk
 from lib.position import Position
+from src.controller import EventDispatcher as Ed
 from src.events import Tick
 from src.references import Layer
 from src.view.sprites import CellSprite
 from src.view.sprites.sprite import Sprite
 from src.view.sprite_factory import SpriteFactory
-from src.controller.event_dispatcher import EventDispatcher as Ed
 
 
-class WorldView:
-    def __init__(self, world_model, max_loaded_chunks=30):
-        self.world_model = world_model
+class MapView:
+    world_model = None
+
+    @classmethod
+    def set_world_model(cls, model): cls.world_model = model
+
+    @classmethod
+    def get_world_model(cls): return cls.world_model
+
+    def __init__(self, model=None, max_loaded_chunks=30):
+        if model: self.model = model
+        else: self.model = self.get_world_model()
+
         # It is the maximum amount of chunks that a subscriber 
         # can have loaded at the same time before being eliminated.
         self.max_loaded_chunks = max_loaded_chunks
@@ -45,7 +55,7 @@ class WorldView:
         for chunk in chunks:
             adyacent_chunks |= set([
                 adyacent_chunk for adyacent_chunk 
-                in self.world_model.get_adjacent_chunks(chunk)
+                in self.model.get_adjacent_chunks(chunk)
             ])
 
         return adyacent_chunks
@@ -118,14 +128,14 @@ class WorldView:
             (or the same one passed by parameter if it is valid).
         """
 
-        limit = self.world_model.get_limit()
+        limit = self.model.get_limit()
         while origin[0] < 0: origin[0] += 1
         while origin[1] < 0: origin[1] +=1
 
         while (origin[0] + length[0]-1) > limit[0]: origin[0] -= 1
         while (origin[1] + length[1]-1) > limit[1]: origin[1] -= 1
 
-        return self.world_model.get_position(origin)
+        return self.model.get_position(origin)
     
 
     def complete_cells(self, subscriber, positions: Matrix, origin: Position, desired_length: tuple):
@@ -286,7 +296,7 @@ class WorldView:
             position_index  = list(position.get_index())
             position_index[axis] += difference
 
-            position = self.world_model.get_position(position_index)
+            position = self.model.get_position(position_index)
 
             new_positions.append(position[1])
             new_chunks.add(position[0])
@@ -299,7 +309,7 @@ class WorldView:
             to the renderized objects dictionary.
         """
 
-        biomes = self.world_model.get_cells(positions)
+        biomes = self.model.get_cells(positions)
 
         self.renderized_sprites |= {
             position: {Layer.CELL: CellSprite(position, biomes[position])} 
@@ -308,7 +318,7 @@ class WorldView:
 
     
     def _render_entities(self, positions):
-        new_sprites = SpriteFactory.translate_entity_dict(self.world_model.get_entities(positions))
+        new_sprites = SpriteFactory.translate_entity_dict(self.model.get_entities(positions))
         for position in new_sprites:
             self.renderized_sprites[position] |= new_sprites[position]
 
@@ -319,7 +329,7 @@ class WorldView:
         """
 
         for position in positions:
-            entities = self.world_model.get_entity(position)
+            entities = self.model.get_entity(position)
 
             # If the position is not being renderized, it's nothing to do.
             if not self.is_renderized(position): continue

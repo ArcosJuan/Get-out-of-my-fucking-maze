@@ -7,4 +7,4 @@ class Entity:
 
     def get_avoidable(self): return self.avoidable
 
-    def interact(self): pass
+    def interact(self): raise NotImplementedError

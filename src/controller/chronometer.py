@@ -1,5 +1,5 @@
-from src.events import Tick
 import pygame as pg
+from src.events import Tick
 
 class Chronometer:
     def __init__(self, time, mode=1):
