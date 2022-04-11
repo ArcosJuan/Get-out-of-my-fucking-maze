@@ -12,12 +12,12 @@ from src.view.window import Window
 
 
 class Camera:
-    def __init__(self, world_view):
+    def __init__(self, view):
         Ed.add(Tick, self.draw)
         Ed.add(MoveCamera, self.move)
         Ed.add(Wheel, self.zoom)
 
-        self.world = world_view
+        self.view = view
 
         self.visible_positions = Matrix()
         self.visible_sprites = dict() # {Position: {Layer: Sprite}}
@@ -101,7 +101,7 @@ class Camera:
         estimated_origin[1] += event.get_x()
                         
         actual_length = self.visible_positions.length()
-        origin = self.world.validate_origin(estimated_origin, actual_length)[1]
+        origin = self.view.validate_origin(estimated_origin, actual_length)[1]
         
         self.update_center(origin, actual_length)
         
@@ -120,7 +120,7 @@ class Camera:
                 self.refresh_sprites()
                 return
 
-        new_sprites, removed_sprites = self.world.replace_cells(
+        new_sprites, removed_sprites = self.view.replace_cells(
             self, self.visible_positions, origin
             )
 
@@ -227,9 +227,9 @@ class Camera:
             if actual_length[1] < desired_length[1]: estimated_origin[1] -= 1
 
         self._switch = not self._switch
-        origin = self.world.validate_origin(estimated_origin, desired_length)[1]
+        origin = self.view.validate_origin(estimated_origin, desired_length)[1]
 
-        sprites = self.world.complete_cells(
+        sprites = self.view.complete_cells(
             self, self.visible_positions, origin, desired_length
             )
 
@@ -276,12 +276,12 @@ class Camera:
         estimated_origin[0] -=  (actual_length[0]-1)//2
         estimated_origin[1] -=  (actual_length[1]-1)//2
 
-        origin = self.world.validate_origin(estimated_origin, actual_length)
+        origin = self.view.validate_origin(estimated_origin, actual_length)
         self.visible_positions = origin[0].verify_area(origin[1], actual_length)
-        self.world.render_chunks(self, [origin[0]])
-        new_sprites = self.world.get_cells(self.visible_positions)
+        self.view.render_chunks(self, [origin[0]])
+        new_sprites = self.view.get_cells(self.visible_positions)
         
-        sprites = self.world.complete_cells(
+        sprites = self.view.complete_cells(
             self, self.visible_positions, origin[1], actual_length
             )
 

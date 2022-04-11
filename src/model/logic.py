@@ -1,6 +1,7 @@
 from src.controller import EventDispatcher as Ed
 from src.events import ArrowKey
 from src.events import EnterMaze
+from src.events import ExitMaze
 from src.events import Interact
 from src.events import MoveEntity
 from src.events import MoveCamera
@@ -22,6 +23,7 @@ class Logic:
         Ed.add(Interact, self.interact)
         Ed.add(GameStart, self.game_start)
         Ed.add(EnterMaze, self.enter_maze)
+        Ed.add(ExitMaze, self.exit_maze)
         Ed.add(ViewChanged, self.point_player)
         self.player: Player = Player()
         self.world: World = None 
@@ -79,6 +81,10 @@ class Logic:
         self.maze = event.get_maze()
         player_position = list(self.maze.generate_spawn_points())[0]
         self.maze.add_entity(player_position, self.player)
+
+
+    def exit_maze(self, event):
+        self.maze = None
 
 
     def point_player(self, event=None):
