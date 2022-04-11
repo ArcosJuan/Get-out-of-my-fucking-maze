@@ -1,7 +1,7 @@
 import pygame as pg
 from lib.singleton import Singleton
-from src.events import UpdateResolution
 from src.controller import EventDispatcher as Ed
+from src.events import UpdateResolution
 
 
 class Window(metaclass=Singleton):

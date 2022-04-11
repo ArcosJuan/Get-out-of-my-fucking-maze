@@ -1,15 +1,15 @@
 import pygame as pg
+from lib.weak_bound_method import WeakBoundMethod as Wbm
+from src.controller import EventDispatcher as Ed
 from src.events import ArrowKey
-from src.events import Interact
 from src.events import Click
+from src.events import Event
+from src.events import Interact
 from src.events import Tick
 from src.events import UpdateResolution
 from src.references.images import DIALOG
-from src.events import Event
-from src.controller.event_dispatcher import EventDispatcher as Ed
 from src.view.sprites import TextBoxSprite
 from src.view.window import Window
-from lib.weak_bound_method import WeakBoundMethod as Wbm
 
 
 

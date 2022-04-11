@@ -1,13 +1,12 @@
 import pygame as pg
+from src.controller import EventDispatcher as Ed
 from src.events import ArrowKey
 from src.events import Click
 from src.events import Interact
 from src.events import PassDialog
-from src.events import Interact
 from src.events import Quit
 from src.events import Tick
 from src.events import Wheel
-from src.controller.event_dispatcher import EventDispatcher as Ed
 
 
 class PygameController:

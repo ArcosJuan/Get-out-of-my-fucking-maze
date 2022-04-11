@@ -2,9 +2,9 @@ from lib.abstract_data_types import NonDirectionalGraph
 from lib.abstract_data_types import Matrix
 from lib.chunk import Chunk
 from lib.position import Position
+from src.controller import EventDispatcher as Ed
 from src.events import MoveEntity
 from src.events import MapUpdated
-from src.controller import EventDispatcher as Ed
 
 
 class Map:

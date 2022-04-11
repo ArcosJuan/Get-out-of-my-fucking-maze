@@ -1,11 +1,11 @@
 import pygame as pg
+from src.controller import EventDispatcher as Ed
 from src.events import CellPressed
 from src.events import Tick
 from src.references import Biome
 from src.references import Tile
 from src.references.images import CELL
 from src.view.sprites.sprite import Sprite
-from src.controller.event_dispatcher import EventDispatcher as Ed
 
 
 class CellSprite(Sprite):

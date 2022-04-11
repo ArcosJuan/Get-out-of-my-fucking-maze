@@ -1,5 +1,5 @@
+from src.controller import EventDispatcher as Ed
 from src.view import Window
-from src.controller.event_dispatcher import EventDispatcher as Ed
 
 
 class Scene:

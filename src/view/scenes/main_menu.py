@@ -1,12 +1,13 @@
+from lib.weak_bound_method import WeakBoundMethod as Wbm
+from src.controller import EventDispatcher as Ed
+from src.events import Click
 from src.events import EndScene
 from src.events import Tick
-from src.events import Click
 from src.events import Quit
-from src.view.scenes import Scene
-from src.controller.event_dispatcher import EventDispatcher as Ed
-from src.view.sprites.popup_menu import PopupMenu
-from lib.weak_bound_method import WeakBoundMethod as Wbm
 from src.view import Window
+from src.view.scenes import Scene
+from src.view.sprites import PopupMenu
+
 
 class MainMenu(Scene):
     def __init__(self):

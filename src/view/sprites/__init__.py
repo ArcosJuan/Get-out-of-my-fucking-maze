@@ -4,5 +4,7 @@ from src.view.sprites.player import PlayerSprite
 from src.view.sprites.innocent import InnocentSprite
 from src.view.sprites.ladder import LadderSprite
 from src.view.sprites.wall import WallSprite
-from src.view.sprites.text_box import TextBoxSprite
 from src.view.sprites.maze import MazeSprite
+from src.view.sprites.text_box import TextBoxSprite
+from src.view.sprites.dialog_box import DialogBoxSprite 
+from src.view.sprites.popup_menu import PopupMenu

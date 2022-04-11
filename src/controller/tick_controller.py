@@ -1,6 +1,6 @@
 import pygame as pg
+from src.controller import EventDispatcher as Ed
 from src.events import Tick
-from src.controller.event_dispatcher import EventDispatcher as Ed
 
 class TickController:
     """ Has the iteration of the game that

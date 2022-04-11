@@ -1,11 +1,11 @@
 from src.events import DialogInit
 from src.events import PassDialog
 from src.events import Tick
-from src.controller.chronometer import Chronometer
-from src.view.sprites.dialog_box import DialogBoxSprite
-from src.controller.event_dispatcher import EventDispatcher as Ed
-from src.view.sprites.simple_sprite import SimpleSprite
+from src.controller import Chronometer
+from src.controller import EventDispatcher as Ed
 from src.references.images import PRESS_N
+from src.view.sprites import DialogBoxSprite
+from src.view.sprites.simple_sprite import SimpleSprite
 from src.view.window import Window
 
 

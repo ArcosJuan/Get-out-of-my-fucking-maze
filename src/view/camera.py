@@ -1,5 +1,6 @@
 import itertools as it
 from lib.abstract_data_types import Matrix
+from src.controller import EventDispatcher as Ed
 from src.events import MoveCamera
 from src.events import Click
 from src.events import Tick
@@ -7,7 +8,6 @@ from src.events import Wheel
 from src.references import Layer
 from src.view.sprites import CellSprite
 from src.view.sprites.sprite import Sprite
-from src.controller.event_dispatcher import EventDispatcher as Ed
 from src.view.window import Window
 
 

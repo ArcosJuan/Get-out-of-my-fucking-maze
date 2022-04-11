@@ -1,3 +1,4 @@
+from src.controller import EventDispatcher as Ed
 from src.events import Tick
 from src.events import EnterMaze
 from src.events import ExitMaze
@@ -5,10 +6,9 @@ from src.events import MapUpdated
 from src.events import PointEntity
 from src.events import ViewChanged
 from src.events import WorldGenerated
-from src.view.dialog_system.dialog_manager import DialogManager 
+from src.view.dialog_manager import DialogManager 
 from src.view.scenes import Scene
 from src.references import Layer
-from src.controller.event_dispatcher import EventDispatcher as Ed
 
 
 

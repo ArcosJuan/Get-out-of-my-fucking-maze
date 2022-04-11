@@ -1,11 +1,10 @@
 import pygame as pg
-from src.controller import TickController
-from src.controller import EventDispatcher
+from src.controller import EventDispatcher as Ed
 from src.controller import PygameController
+from src.controller import TickController
 from src.events import Quit
 from src.model import Logic
 from src.view import SceneManager
-from src.controller.event_dispatcher import EventDispatcher as Ed
 
 
 class Main:

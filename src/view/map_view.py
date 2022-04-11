@@ -3,12 +3,12 @@ from lib.abstract_data_types import Matrix
 from lib.abstract_data_types import NonDirectionalGraph
 from lib.chunk import Chunk
 from lib.position import Position
+from src.controller import EventDispatcher as Ed
 from src.events import Tick
 from src.references import Layer
 from src.view.sprites import CellSprite
 from src.view.sprites.sprite import Sprite
 from src.view.sprite_factory import SpriteFactory
-from src.controller.event_dispatcher import EventDispatcher as Ed
 
 
 class MapView:
