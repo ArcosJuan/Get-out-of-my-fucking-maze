@@ -20,7 +20,7 @@ class EventDispatcher:
                 listener:<BoundMethod>
         """
 
-        listener = Wbm(listener)
+        listener = Wbm(listener, eventcls)
 
         # If the event is not in the dictionary, 
         # it is added and subscribed to by the listener.
@@ -29,9 +29,7 @@ class EventDispatcher:
 
     @classmethod
     def remove(cls, eventcls, listener):
-        for l in cls.listeners[eventcls]:
-            if l == listener:
-                cls.listeners[eventcls].remove(l)
+        cls.listeners[eventcls].remove(listener)
 
 
     @classmethod
@@ -50,13 +48,12 @@ class EventDispatcher:
             else:
                 l = cls.listeners[event.__class__].copy()
                 for listener in l:
-                    listener(event)
-                    
+                    listener(event)             
 
 
     @classmethod
     def add_exclusive_listener(cls, eventcls, listener):
-        listener = Wbm(listener)
+        listener = Wbm(listener, eventcls)
         cls.exclusive_listeners.setdefault(eventcls, list()).append(listener)
 
 

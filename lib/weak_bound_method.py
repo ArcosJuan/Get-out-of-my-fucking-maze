@@ -6,11 +6,12 @@ class WeakBoundMethod:
         of a class into a weak reference.
     """
 
-    def __init__(self, meth, *args, **kwargs):
+    def __init__(self, meth, eventcls, *args, **kwargs):
         self._args = args
         self._kwargs = kwargs
         self._self = weakref.ref(meth.__self__)
         self._func = meth.__func__
+        self.eventcls = eventcls
 
 
     def __call__(self, *args, **kwargs):
@@ -22,7 +23,9 @@ class WeakBoundMethod:
         if not self._self() is None:
             self._func(self._self(), *args, **kwargs)
 
-        else:  del(self)
+        else:  
+            from src.controller.event_dispatcher import EventDispatcher as Ed
+            Ed.remove(self.eventcls, self)
 
 
     def __eq__(self, other):
