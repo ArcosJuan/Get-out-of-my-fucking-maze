@@ -23,7 +23,7 @@ class MainMenu(Scene):
             self.showing_menu = PopupMenu(
                 [
                     ("Play", EndScene(self.__class__)),
-                    ("Resolution", Wbm(self.change_showing_menu, "Resolution")),
+                    ("Resolution", Wbm(self.change_showing_menu, None, "Resolution")),
                     ("Exit", Quit())
                 ],
                 (1/2, 1/2),
@@ -34,10 +34,10 @@ class MainMenu(Scene):
         if new_menu == "Resolution":
             self.showing_menu = PopupMenu(
                 [
-                    ("960x540", Wbm(self.set_window_resolution, (960,540))),
-                    ("600x900", Wbm(self.set_window_resolution, (600,900))), 
-                    ("300x900", Wbm(self.set_window_resolution, (900,300))), 
-                    ("Back", Wbm(self.change_showing_menu, "Main"))
+                    ("960x540", Wbm(self.set_window_resolution, None, (960,540))),
+                    ("600x900", Wbm(self.set_window_resolution, None, (600,900))), 
+                    ("300x900", Wbm(self.set_window_resolution, None, (900,300))), 
+                    ("Back", Wbm(self.change_showing_menu, None, "Main"))
                 ], 
                     (1/2, 1/2),
                     max_size=40,
