@@ -18,7 +18,7 @@ class Game(Scene):
         self.view = None
         self.maze_view = None
         self.camera  = None
-        dialog_manager = DialogManager()
+        self.dialog_manager = DialogManager()
         
         Ed.add(WorldGenerated, self.create_world_view)
         Ed.add(PointEntity, self.point_entity)
