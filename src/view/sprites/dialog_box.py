@@ -5,7 +5,7 @@ from src.view.sprites import TextBoxSprite
 
 
 class DialogBoxSprite:
-    def __init__(self, min_size = 20, max_size = 38, box_margins = (10, 10), text_height_percentage=25, text_margins_percentage=(3,10), text_color=(255,255,255), text_line_spacing=0):
+    def __init__(self, min_size = 20, max_size = 38, box_margins = (10, 10), text_size_percentage=10, text_margins_percentage=(3,10), text_color=(255,255,255), text_line_spacing=0):
         """ Creates the dialog box image and act as the
             mediator to the dialog box image.
         """
@@ -28,7 +28,7 @@ class DialogBoxSprite:
 
         # Text properties:
         self.text_p = {
-            'height':self.box_image.get_size()[1] * text_height_percentage // 100,
+            'height':self._calculate_text_height(text_size_percentage),
             'margins_percentage': text_margins_percentage,
             'color': text_color,
             'line_spacing': text_line_spacing
@@ -149,6 +149,11 @@ class DialogBoxSprite:
             )
         
         return box_rect
+
+
+    def _calculate_text_height(self, text_percentage):
+        box_area = self.box_image.get_size()[1] * self.box_image.get_size()[0]
+        return int((box_area**(1/2) * text_percentage)// 100)
 
 
     def _create_text_area(self, margin_percentage):
