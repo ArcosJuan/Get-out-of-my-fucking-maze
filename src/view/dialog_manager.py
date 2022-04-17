@@ -4,7 +4,7 @@ from src.events import ReturnKey
 from src.events import Tick
 from src.controller import Chronometer
 from src.controller import EventDispatcher as Ed
-from src.references.images import PRESS_N
+from src.references.images import NEXT_DIALOG
 from src.view.sprites import DialogBoxSprite
 from src.view.sprites.simple_sprite import SimpleSprite
 from src.view.window import Window
@@ -16,9 +16,8 @@ class DialogManager:
 
         self.dialog_box = DialogBoxSprite()
         
-        self.press_n_alert = SimpleSprite(PRESS_N, window_percentage=10, min_height=20, max_height=50)
-        self.press_n_alert.rect.bottomright = Window().resolution
-        self.press_n_time = Chronometer(1)
+        self.next_dialog_alert = self.initialize_alert()
+        self.next_dialog_time = Chronometer(1)
 
         self.dialogues = []
     
@@ -56,5 +55,18 @@ class DialogManager:
 
     def update(self, event= None):
         self.dialog_box.draw()
-        if self.press_n_time.get_update(): self.press_n_alert.draw()
+        if self.next_dialog_time.get_update(): self.next_dialog_alert.draw()
 
+
+    def initialize_alert(self):
+        next_dialog_alert = SimpleSprite(
+            NEXT_DIALOG, window_percentage=10, min_height=20, max_height=50
+        )
+
+        next_dialog_pos = (
+            self.dialog_box.box_rect.bottomright[0] - self.dialog_box.box_margins[0],
+            self.dialog_box.box_rect.bottomright[1]
+        )
+
+        next_dialog_alert.rect.bottomright = next_dialog_pos
+        return next_dialog_alert

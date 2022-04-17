@@ -20,7 +20,7 @@ CELL = {
     Tile.STONE:pg.image.load('assets/graphics/tiles/stone.png').convert(),
 }
 
-_dialog_images = pg.image.load('assets/graphics/dialog/dialog_tiles20x20.png').convert()
+_dialog_images = pg.image.load('assets/graphics/dialog/dialog_tiles.png').convert()
 
 DIALOG = {
     "TOPLEFT":pg.transform.chop(_dialog_images, (20,20,40,20)),
@@ -28,6 +28,6 @@ DIALOG = {
     "CENTER":pg.transform.chop(_dialog_images, (0,20,40,20)),
 }
 
-PRESS_N = pg.image.load('assets/graphics/dialog/press_n600x600.png').convert_alpha()
+NEXT_DIALOG = pg.image.load('assets/graphics/dialog/next_dialog.png').convert_alpha()
 
 MAZE = pg.image.load('assets/graphics/entities/maze.png').convert_alpha()
