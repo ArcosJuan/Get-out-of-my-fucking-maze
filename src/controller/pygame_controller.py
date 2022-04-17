@@ -2,8 +2,7 @@ import pygame as pg
 from src.controller import EventDispatcher as Ed
 from src.events import ArrowKey
 from src.events import Click
-from src.events import Interact
-from src.events import PassDialog
+from src.events import ReturnKey
 from src.events import Quit
 from src.events import Tick
 from src.events import Wheel
@@ -16,7 +15,6 @@ class PygameController:
 
     def __init__(self):
         Ed.add(Tick, self.iterate_events)
-        self._mode = 0 # 0: Default, 1: Dialog, 2: PopupMenu
         self.arrow_keys_pressed = dict()
 
     def iterate_events(self, event):
@@ -35,15 +33,10 @@ class PygameController:
                     Ed.post(ArrowKey(x=-1)) 
                     
                 elif event.key == pg.K_RETURN: 
-                    Ed.post(Interact())
+                    Ed.post(ReturnKey())
 
             elif event.type == pg.MOUSEBUTTONUP:
                 Ed.post(Click(event.pos, event.button))
             
-
-            elif self._mode == 1: 
-                if event.type == pg.KEYUP:
-                    if event.key == pg.K_n:
-                        Ed.post(PassDialog())
 
             

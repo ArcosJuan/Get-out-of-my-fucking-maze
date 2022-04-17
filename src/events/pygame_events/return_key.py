@@ -1,6 +1,6 @@
 from src.events import Event
 
 
-class PassDialog(Event):
+class ReturnKey(Event):
     def __init__(self):
         super().__init__()

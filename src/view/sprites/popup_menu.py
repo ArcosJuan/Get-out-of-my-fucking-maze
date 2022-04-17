@@ -4,7 +4,7 @@ from src.controller import EventDispatcher as Ed
 from src.events import ArrowKey
 from src.events import Click
 from src.events import Event
-from src.events import Interact
+from src.events import ReturnKey
 from src.events import Tick
 from src.events import UpdateResolution
 from src.references.images import DIALOG
@@ -17,12 +17,12 @@ class PopupMenu:
     box_pieces = {"topleft": DIALOG["TOPLEFT"], "top": DIALOG["TOP"], "center": DIALOG["CENTER"]}
     
     def __init__(self, options, box_relative_pos=(1/2,1/2), min_size = 20, max_size = 30, txt_to_pct=5, text_default_color=(255,255,255), text_active_color = (255,0,0), initial_index=0):
-        Ed.add(Interact, self.interact)
+        Ed.add(ReturnKey, self.interact)
         Ed.add(Tick, self.draw)
         Ed.add(UpdateResolution, self.update_size)
         
         Ed.add_exclusive_listener(ArrowKey, self.move_option)
-        Ed.add_exclusive_listener(Interact, self.interact)
+        Ed.add_exclusive_listener(ReturnKey, self.interact)
 
         # TEXT INITIALIZATION:
         self.txt_to_pct = txt_to_pct # It is the percentage of the screen that the text occupies.
@@ -217,7 +217,7 @@ class PopupMenu:
 
     def __del__(self):
         Ed.remove_exclusive_listener(ArrowKey, self.move_option)
-        Ed.remove_exclusive_listener(Interact, self.interact)
+        Ed.remove_exclusive_listener(ReturnKey, self.interact)
 
 
     def _get_option_sprites(self):

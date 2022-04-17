@@ -1,5 +1,4 @@
 from lib.weak_bound_method import WeakBoundMethod as Wbm
-from src.events import Interact
 
 
 class EventDispatcher:
