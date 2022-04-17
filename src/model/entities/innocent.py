@@ -1,7 +1,8 @@
 import json
 import random
+from src.controller import EventDispatcher as Ed
+from src.events import DialogInit
 from src.model.entities import Entity
-from src.references.data import DIALOGS
 from src.references.data import INNOCENTS
 
 
@@ -20,8 +21,11 @@ class Innocent(Entity):
            
 
     def __init__(self):
-        super().__init__()
+        super().__init__(reachable=True)
         self.name = self.get_new_name()
-        self.dialogs = {key:DIALOGS[key] for key in INNOCENTS[self.name]}
+        self.dialogs = INNOCENTS[self.name]
 
 
+    def interact(self):
+        Ed.post(DialogInit(random.choice(self.dialogs)))
+        
