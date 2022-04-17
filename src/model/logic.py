@@ -69,12 +69,25 @@ class Logic:
 
 
     def interact(self, event):
-        player_position = self.get_actual_place().get_entity_position(self.player)
-        entities = self.get_actual_place().get_entity(player_position)
+        actual_place = self.get_actual_place()
+        player_position = actual_place.get_entity_position(self.player)
+        entities = actual_place.get_entity(player_position)
         if entities: entities = entities[player_position]
+
         for entity in entities:
             if isinstance(entity, Entity):
                 entity.interact()
+                return
+        
+        # If it is not on any entity, check if it is in the range of a reachable entity.
+        adjacent_pos = actual_place.get_adjacent_positions(player_position, False)
+        adjacent_entities = actual_place.get_entities(adjacent_pos)
+        if adjacent_entities:
+            for pos in adjacent_entities.keys():
+                for entity in adjacent_entities[pos]:
+                    if isinstance(entity, Entity):
+                        if entity.get_reachable():
+                            entity.interact()
 
 
     def enter_maze(self, event):

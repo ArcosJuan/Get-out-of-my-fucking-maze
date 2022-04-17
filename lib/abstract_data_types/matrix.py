@@ -236,7 +236,7 @@ class Matrix:
 
 
     @ft.lru_cache
-    def get_adjacencies(self, index:tuple):
+    def get_adjacencies(self, index:tuple, include_diagonals=True):
         """ Returns all the elements contiguous to the one 
             of the given index.
         """
@@ -251,12 +251,16 @@ class Matrix:
 
         for row in range (min_index[0], (index[0]+2)):
             for column in range(min_index[1], (index[1]+2)):
-                if index == (row, column):
+                if index == (row, column): continue
+                
+                if not include_diagonals and index[0] != row and index[1] != column:
                     continue
+                
                 try:
                     elements.append(self.rows[row][column])
                 except IndexError:
                     continue
+                
         return elements
 
 

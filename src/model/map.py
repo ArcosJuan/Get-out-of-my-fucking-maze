@@ -61,12 +61,12 @@ class Map:
         return chunk
         
 
-    def get_adjacent_positions(self, position) -> list:
+    def get_adjacent_positions(self, position, include_diagonals=True) -> list:
         """ Returns the list of Position objects 
             adjacent to the one given by parameter.
         """
 
-        return self.positions.get_adjacencies(self.positions.index(position))
+        return self.positions.get_adjacencies(self.positions.index(position), include_diagonals)
 
 
     def get_limit(self) -> Position:
