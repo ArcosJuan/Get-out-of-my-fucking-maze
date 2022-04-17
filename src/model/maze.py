@@ -31,7 +31,7 @@ class Maze(Map, Entity):
 
 
     def __init__(self):
-        self.avoidable = True
+        self.walkable = True
         Ed.add(MoveEntity, self.move_entity)
 
         self.name = self.get_new_name()
@@ -138,15 +138,15 @@ class Maze(Map, Entity):
         return {position:self.cells[position] for position in positions}
 
 
-    def avoid_position(self, position):
+    def passable_position(self, position):
         """ Returns True if it's no problem with pass over a position.
         """
 
         if self.entities.has_node(position): 
             for entity in self.entities.get_adjacencies(position):
                 if isinstance(entity, Entity):
-                    return not entity.get_avoidable()
+                    return entity.get_walkable()
 
 
-        else: return False    
+        else: return True    
     

@@ -6,7 +6,7 @@ from src.model.entities import Entity
 class Ladder(Entity):
     
     def __init__(self):
-        self.avoidable = True
+        super().__init__(walkable=True)
 
     def interact(self):
         Ed.post(ExitMaze())

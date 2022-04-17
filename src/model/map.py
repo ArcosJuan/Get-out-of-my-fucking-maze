@@ -144,7 +144,7 @@ class Map:
             Returns a bool that indicates if it could be moved.
         """
 
-        if  self.avoid_position(event.get_destination()):
+        if  not self.passable_position(event.get_destination()):
             return False
 
         entity = event.get_entity()
@@ -191,7 +191,7 @@ class Map:
 
 
 
-    def avoid_position(self, position) -> bool:
+    def passable_position(self, position) -> bool:
         """ Returns True if it's no problem with pass over a position.
         """
 

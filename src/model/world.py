@@ -149,20 +149,20 @@ class World(Map):
         return positions
 
 
-    def avoid_position(self, position):
+    def passable_position(self, position):
         """ Returns True if it's no problem with pass over a position.
         """
         
         if not BiomesManager.get_passable(self.cells[position]): 
-            return True
+            return False
 
         elif self.entities.has_node(position): 
             for entity in self.entities.get_adjacencies(position):
                 if isinstance(entity, Entity):
-                    return not entity.get_avoidable()
+                    return entity.get_walkable()
 
 
-        else: return False    
+        else: return True    
 
 
     

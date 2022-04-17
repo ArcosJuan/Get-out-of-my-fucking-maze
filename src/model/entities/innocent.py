@@ -20,7 +20,7 @@ class Innocent(Entity):
            
 
     def __init__(self):
-        self.avoidable = False
+        super().__init__()
         self.name = self.get_new_name()
         self.dialogs = {key:DIALOGS[key] for key in INNOCENTS[self.name]}
 
