@@ -335,7 +335,7 @@ class MapView:
 
             cell = self.renderized_sprites[position][Layer.CELL]
 
-            if entities:
+            if entities and entities.get(position):
                 if self.renderized_sprites.get(position) != entities:
                     self._render_entities([position])
                 self.renderized_sprites.update(SpriteFactory.translate_entity_dict(entities))
