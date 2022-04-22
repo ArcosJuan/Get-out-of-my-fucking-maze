@@ -1,6 +1,7 @@
 from src.events.event import Event
 # Non pygame events:
 from src.events.dialog_init import DialogInit
+from src.events.die import Die
 from src.events.end_scene import EndScene
 from src.events.enter_maze import EnterMaze
 from src.events.exit_maze import ExitMaze
@@ -13,6 +14,7 @@ from src.events.update_resolution import UpdateResolution
 from src.events.move_entity import MoveEntity
 from src.events.view_changed import ViewChanged
 from src.events.map_updated import MapUpdated
+from src.events.kill import Kill
 
 # Pygame events:
 from src.events.pygame_events.tick import Tick
