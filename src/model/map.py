@@ -95,6 +95,12 @@ class Map:
         self.entities.add_edge((position, entity))
 
 
+    def remove_entity(self, entity): 
+        entity_pos = self.get_entity_position(entity)
+        self.entities.remove_node(entity)
+        Ed.post(MapUpdated([entity_pos]))
+
+
     def get_entities(self, positions: list) -> dict:
         """ Returns a dictionary with the passed positions as keys 
             and the list of entities of each position as value. 

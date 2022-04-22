@@ -2,6 +2,8 @@ import json
 import random
 from src.controller import EventDispatcher as Ed
 from src.events import DialogInit
+from src.events import Die
+from src.events import Kill
 from src.model.entities import Entity
 from src.references.data import INNOCENTS
 
@@ -27,5 +29,11 @@ class Innocent(Entity):
 
 
     def interact(self):
+        Ed.add(Kill, self.get_killed)
         Ed.post(DialogInit(random.choice(self.dialogs)))
+
+    
+    def get_killed(self, event):
+        Ed.remove(Kill, self.get_killed)
+        Ed.post(Die(self))
         

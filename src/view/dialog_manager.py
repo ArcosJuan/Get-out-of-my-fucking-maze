@@ -1,11 +1,14 @@
 from src.events import ArrowKey
 from src.events import DialogInit
 from src.events import ReturnKey
+from src.events import Die
 from src.events import Tick
+from src.events import Kill
 from src.controller import Chronometer
 from src.controller import EventDispatcher as Ed
 from src.references.images import NEXT_DIALOG
 from src.view.sprites import DialogBoxSprite
+from src.view.sprites.popup_menu import PopupMenu
 from src.view.sprites.simple_sprite import SimpleSprite
 from src.view.window import Window
 
@@ -18,6 +21,8 @@ class DialogManager:
         
         self.next_dialog_alert = self.initialize_alert()
         self.next_dialog_time = Chronometer(1)
+
+        self.battle_menu = None
 
         self.dialogues = []
     
@@ -48,10 +53,23 @@ class DialogManager:
             self.dialog_box.set_text(self.dialogues.pop(0))
 
         else:
+            self.battle_menu = PopupMenu(
+                [
+                    ("Kill", Kill())
+                ], 
+                    (1/2, 1/2),
+                    max_size=40,
+                    txt_a_pct=1
+            )
+            Ed.add(Die, self.remove_battle_menu)
             Ed.remove(Tick, self.update)
             Ed.remove_exclusive_listener(ArrowKey, self.pass_dialog)
             Ed.remove_exclusive_listener(ReturnKey, self.pass_dialog)
 
+
+    def remove_battle_menu(self, event):
+        Ed.remove(Die, self.remove_battle_menu)
+        self.battle_menu = None
 
     def update(self, event= None):
         self.dialog_box.draw()

@@ -1,5 +1,6 @@
 from src.controller import EventDispatcher as Ed
 from src.events import ArrowKey
+from src.events import Die
 from src.events import EnterMaze
 from src.events import ExitMaze
 from src.events import ReturnKey
@@ -25,9 +26,14 @@ class Logic:
         Ed.add(EnterMaze, self.enter_maze)
         Ed.add(ExitMaze, self.exit_maze)
         Ed.add(ViewChanged, self.point_player)
+        Ed.add(Die, self.kill_innocent)
         self.player: Player = Player()
         self.world: World = None 
         self.maze = None
+
+
+    def kill_innocent(self, event):
+        self.get_actual_place().remove_entity(event.get_innocent())
 
 
     def get_actual_place(self): return self.maze if self.maze else self.world
