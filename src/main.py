@@ -1,3 +1,4 @@
+import sys
 import pygame as pg
 from src.controller import EventDispatcher as Ed
 from src.controller import PygameController
@@ -24,7 +25,7 @@ class Main:
 
     def exit(self, event):
         pg.quit()
-        exit()
+        sys.exit()
 
 
     def run(self):
