@@ -16,8 +16,8 @@ class SimpleSprite(pg.sprite.Sprite):
             ), "Please indicate just one of the measure arguments."
 
         if window_percentage != -1:
-            x = (Window().resolution[0] * window_percentage) // 100
-            y = (Window().resolution[1] * window_percentage) // 100
+            x = (Window().get_resolution()[0] * window_percentage) // 100
+            y = (Window().get_resolution()[1] * window_percentage) // 100
 
             if x < y:
                 scale = (x, image.get_size()[1] - abs(x - image.get_size()[0]))

@@ -50,8 +50,8 @@ class PopupMenu:
     def _get_text_height(self):
         return int(
                 (
-                    self.txt_a_pct*(Window().resolution[0]
-                    *Window().resolution[1])/100
+                    self.txt_a_pct*(Window().get_resolution()[0]
+                    *Window().get_resolution()[1])/100
                 )**(1/2)
             )
 
@@ -65,8 +65,8 @@ class PopupMenu:
 
     def _set_relative_position(self):
         self.box_rect.center = (
-            Window().resolution[0] * self.box_relative_pos[0],
-            Window().resolution[1] * self.box_relative_pos[1]
+            Window().get_resolution()[0] * self.box_relative_pos[0],
+            Window().get_resolution()[1] * self.box_relative_pos[1]
         )
 
 
@@ -84,8 +84,8 @@ class PopupMenu:
             given a maximum and minimum size.
         """
 
-        x = (Window().resolution[0] * 10) // 100
-        y = (Window().resolution[1] * 10) // 100
+        x = (Window().get_resolution()[0] * 10) // 100
+        y = (Window().get_resolution()[1] * 10) // 100
 
         scale = x if x < y else y 
 
@@ -110,8 +110,8 @@ class PopupMenu:
         box_min_size[0] += self.box_pieces["top"].get_size()[0] * 3
         box_min_size[1] += self.box_pieces["top"].get_size()[1] * 2
 
-        if Window().resolution[0] < box_min_size[0] \
-            or Window().resolution[1] < box_min_size[1]:
+        if Window().get_resolution()[0] < box_min_size[0] \
+            or Window().get_resolution()[1] < box_min_size[1]:
             raise AssertionError("Current Window resolution cannot show dialogue box properly")
 
 

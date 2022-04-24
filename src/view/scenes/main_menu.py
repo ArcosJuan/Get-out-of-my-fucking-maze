@@ -45,8 +45,8 @@ class MainMenu(Scene):
             )
 
     
-    def set_window_resolution(self, resolution):
-        Window().resolution = resolution
+    def set_window_resolution(self, resolution, flags=0):
+        Window().set_resolution(resolution, flags)
         Window().background = (0,0,0)
 
         

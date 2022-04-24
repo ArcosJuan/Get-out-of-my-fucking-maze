@@ -321,7 +321,7 @@ class Camera:
             based on the resolution, the zoom and the matrix length.
         """
 
-        resolution = Window().resolution
+        resolution = Window().get_resolution()
         cell_size = Sprite.get_actual_size()
         length = self.visible_positions.length()
 
@@ -340,6 +340,6 @@ class Camera:
             based on the given size of the CellSprites.
         """
 
-        resolution = Window().resolution
+        resolution = Window().get_resolution()
 
         return (resolution[1] // cells_size, resolution[0] // cells_size)
