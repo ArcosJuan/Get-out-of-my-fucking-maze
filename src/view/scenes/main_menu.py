@@ -16,9 +16,8 @@ class MainMenu(Scene):
         super().__init__()
         Ed.add(Tick, Scene.window.update)
         Ed.add(Tick, self.update)
-        self.resolutions = self.create_resolutions()
-        self.set_window_resolution(self.resolutions[1])
         self.resize_sprites(50)
+        self.set_window_resolution(self.create_resolutions()[1])
         self.showing_menu = None
         self.change_showing_menu("Main")
 
@@ -53,10 +52,11 @@ class MainMenu(Scene):
             )
     
         elif new_menu == "Resolution":
+            resolutions = self.create_resolutions()
             options = [(
                 f"{res[0]}x{res[1]}", 
                 Wbm(self.set_window_resolution, None, res)
-                ) for res in self.resolutions
+                ) for res in resolutions
             ]
         
             options.extend([
@@ -64,7 +64,7 @@ class MainMenu(Scene):
                 ("Back", Wbm(self.change_showing_menu, None, "Main")),
             ])
 
-            current_resolution = self.resolutions.index(Window().get_resolution()) if Window().get_resolution() in self.resolutions else 0
+            current_resolution = resolutions.index(Window().get_resolution()) if Window().get_resolution() in resolutions else 0
             self.showing_menu = PopupMenu(
                 options=options,
                 box_relative_pos=(1/2, 1/2),
