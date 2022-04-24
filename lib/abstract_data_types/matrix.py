@@ -139,7 +139,7 @@ class Matrix:
         return False
 
 
-    def split (self, quantity:int):
+    def split (self, quantity:int, min_size:tuple = None):
         """ Divides the matrix into the requested number of smaller matrices
             ensuring they are all the same size. (The matrix must be able 
             to be divided by the quantity without leaving a remainder).
@@ -172,6 +172,12 @@ class Matrix:
         )
 
         new_length = self.get_squarest_length(tuple(posible_lengths))
+        if min_size:
+            while new_length[0] > min_size[0] or new_length[1] > min_size[1]:
+                new_length = self.get_squarest_length(tuple(posible_lengths))
+                posible_lengths.remove(new_length)
+
+
         grand_matrix = Matrix()
 
         for row in range(0, self.length()[0],new_length[0]) :

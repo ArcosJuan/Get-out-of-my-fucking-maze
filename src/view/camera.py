@@ -29,7 +29,6 @@ class Camera:
         # Minimum harcoded size for the cells matrix. 
         self.min_length = (3,5)
         self.max_length = Window().calculate_grid(Sprite.get_min_size())
-        
 
 
     def is_visible(self, position):
@@ -334,12 +333,3 @@ class Camera:
 
         return origin
 
-
-    def _calculate_length(self, cells_size:int) -> tuple[int, int]:
-        """ Returns the length that the visible_cells should have,
-            based on the given size of the CellSprites.
-        """
-
-        resolution = Window().get_resolution()
-
-        return (resolution[1] // cells_size, resolution[0] // cells_size)

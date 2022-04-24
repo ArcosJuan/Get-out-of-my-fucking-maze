@@ -1,9 +1,11 @@
 from src.controller import EventDispatcher as Ed
 from src.events import EndScene
 from src.events import GameStart
+from src.view import Window
 from src.view.scenes import Game
 from src.view.scenes import MainMenu
 from src.view.scenes import Scene
+from src.view.sprites import Sprite
 
 
 class SceneManager:
@@ -23,7 +25,7 @@ class SceneManager:
         scene = event.get_scene()
         if scene == self.scenes['menu']:
             self._set_current_scene(self.scenes['game'])
-            Ed.post(GameStart())
+            Ed.post(GameStart(min_size=Sprite.calculate_length(resolution=Window().get_resolution())))
 
 
     def _set_current_scene(self, scene):

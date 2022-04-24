@@ -166,7 +166,7 @@ class Map:
         return True 
 
 
-    def _generate_chunks(self, min_size:tuple, positions:Matrix) -> Matrix:
+    def _generate_chunks(self, positions:Matrix) -> Matrix:
         """ Returns a Matrix of Chunk objects based on a given size 
             (the minimum number of cells that can fit in a Chunk).
         """

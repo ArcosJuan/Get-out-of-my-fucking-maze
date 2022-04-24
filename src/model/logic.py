@@ -37,7 +37,7 @@ class Logic:
 
 
     def game_start(self, event):
-        self.world =  World()
+        self.world =  World(min_size=event.get_min_size())
         player_position = list(self.world.generate_spawn_points())[0]
         self.world.add_entity(player_position, self.player)
         Ed.post(WorldGenerated(self.world))
@@ -49,8 +49,8 @@ class Logic:
         player_position_x = player_position.get_index()[1] + event.get_x()
         player_position_y = player_position.get_index()[0] - event.get_y()
 
-        if player_position_x < self.get_actual_place().get_size()[0] \
-            and player_position_y < self.get_actual_place().get_size()[1] \
+        if player_position_x < self.get_actual_place().get_size()[1] \
+            and player_position_y < self.get_actual_place().get_size()[0] \
             and player_position_x >= 0 \
             and player_position_y >= 0:
 

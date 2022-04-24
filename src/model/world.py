@@ -32,12 +32,12 @@ class World(Map):
         self.size = size
         self.positions: Matrix = self._generate_positions(size)
         self.entities = NonDirectionalGraph() # {Position -- Object}
-        self.chunks= self._generate_chunks(min_size, self.positions, size)
+        self.chunks= self._generate_chunks(self.positions, min_size, size)
         self.cells = self._generate_cells(self.positions,biomes)
 
 
 
-    def _generate_chunks(self, min_size:tuple, positions:Matrix, size:tuple) -> Matrix:
+    def _generate_chunks(self, positions:Matrix, min_size:tuple, size:tuple) -> Matrix:
         """ Returns a Matrix of Chunk objects based on a given size 
             (the minimum number of cells that can fit in a Chunk).
         """
@@ -53,7 +53,7 @@ class World(Map):
         Chunk.set_length(chunk_size)
         chunks_amount = (size[0] * size[1]) // (chunk_size[0] * chunk_size[1])
 
-        splited_positions = positions.split(chunks_amount)
+        splited_positions = positions.split(chunks_amount, chunk_size)
 
         return Matrix(
             [[Chunk(positions, (y,x)) for x, positions in enumerate(row)]
