@@ -31,8 +31,6 @@ class MapView:
         self.renderized_sprites = dict() # {Position: {Layer: Sprite}}
         self.renderized_chunks = NonDirectionalGraph()
 
-        Sprite.set_size(Sprite.get_min_size())
-
 
     def render_chunks(self, subscriber, chunks:set):
         """ Receives a Chunk and its subscriber(any object) and render it.

@@ -3,7 +3,7 @@ import pygame as pg
 
 class Sprite(pg.sprite.Sprite):
     ed = None
-    min_size = 30
+    min_size = 25
     actual_size = min_size
 
     @classmethod

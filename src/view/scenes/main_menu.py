@@ -18,6 +18,7 @@ class MainMenu(Scene):
         Ed.add(Tick, self.update)
         self.resolutions = self.create_resolutions()
         self.set_window_resolution(self.resolutions[1])
+        self.resize_sprites(50)
         self.showing_menu = None
         self.change_showing_menu("Main")
 
@@ -41,6 +42,7 @@ class MainMenu(Scene):
             self.showing_menu = PopupMenu(
                 [
                     ("Play", EndScene(self.__class__)),
+                    ("Zoom", Wbm(self.change_showing_menu, None, "Zoom")),
                     ("Resolution", Wbm(self.change_showing_menu, None, "Resolution")),
                     ("Exit", Quit())
                 ],
@@ -67,15 +69,41 @@ class MainMenu(Scene):
                 options=options,
                 box_relative_pos=(1/2, 1/2),
                 max_size=40,
-                txt_to_pct=1,
+                txt_to_pct=0.5,
                 text_active_color=(0,255,0),
                 initial_index=current_resolution,
             )
 
+        elif new_menu == "Zoom":
+            options=[
+                ("25%", Wbm(self.resize_sprites, None, 25)),
+                ("50%", Wbm(self.resize_sprites, None, 50)),
+                ("75%", Wbm(self.resize_sprites, None, 75)),
+                ("100%", Wbm(self.resize_sprites, None, 100)),
+                ("Back", Wbm(self.change_showing_menu, None, "Main")),
+            ]
+            current_zoom = int((Sprite.get_actual_size() * 25)//Sprite.get_min_size())
+            current_zoom = [options.index(option) for option in options if option[0] == f"{current_zoom}%"]
+
+            self.showing_menu = PopupMenu(
+                options=options,
+                box_relative_pos=(1/2, 1/2),
+                max_size=40,
+                txt_to_pct=1,
+                text_active_color=(0,255,0),
+                initial_index=current_zoom[0] if current_zoom else 0
+            )
     
+
     def set_window_resolution(self, resolution, flags=0):
         Window().set_resolution(resolution, flags)
         Window().background = (0,0,0)
+
+
+    def resize_sprites(self, size_pct):
+        # The minimum size is equivalent to 25% zoom.
+        new_size = (size_pct * Sprite.get_min_size())// 25
+        Sprite.set_size(new_size)
 
         
     def __del__(self): 
