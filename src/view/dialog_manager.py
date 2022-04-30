@@ -59,7 +59,7 @@ class DialogManager:
                 ], 
                     (1/2, 1/2),
                     max_size=40,
-                    txt_a_pct=1
+                    txt_to_pct=1
             )
             Ed.add(Die, self.remove_battle_menu)
             Ed.remove(Tick, self.update)
