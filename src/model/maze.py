@@ -32,6 +32,7 @@ class Maze(Map, Entity):
 
     def __init__(self):
         self.walkable = True
+        self.reachable = False
         Ed.add(MoveEntity, self.move_entity)
 
         self.name = self.get_new_name()
