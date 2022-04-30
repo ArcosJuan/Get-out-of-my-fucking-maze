@@ -5,11 +5,17 @@ from lib.abstract_data_types import Matrix
 
 
 def open_json(path):
-    with open(path, 'r') as json_file: return json.load(json_file)
-
+    try:
+        with open(path, 'r') as json_file: return json.load(json_file)
+    except FileNotFoundError as error:
+        return None
 
 def open_pickle(path):
-    with open(path, 'rb') as f: return pickle.load(f)
+    try:
+        with open(path, 'rb') as f: return pickle.load(f)
+    except FileNotFoundError as error:
+        return None
+
 
 
 def load_maps():
@@ -23,8 +29,9 @@ def load_maps():
                 name = maze.name.replace(".tiles.pickle", "").upper()
                 tile_map = Matrix(open_pickle(maze.path))
                 entities_map = open_pickle(maze.path.replace(".tiles.pickle", ".entities.pickle"))
+                innocent_map = open_pickle(maze.path.replace(".tiles.pickle", ".innocents.pickle"))
 
-                mazes[name] = (tile_map, entities_map)
+                mazes[name] = (tile_map, entities_map, innocent_map)
 
             return mazes
 

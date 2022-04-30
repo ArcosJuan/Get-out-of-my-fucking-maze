@@ -68,7 +68,8 @@ class Maze(Map, Entity):
         """
 
         tile_map = MAZES[self.name][0] # Matrix
-        entity_map = MAZES[self.name][1] # Dict
+        entity_map = MAZES[self.name][1] if MAZES[self.name][1] else {}
+        innocents_map = MAZES[self.name][2] if MAZES[self.name][2] else {}
 
         size = tile_map.length()
         center_pos = self.positions.get_center()
@@ -79,7 +80,11 @@ class Maze(Map, Entity):
                 corrected_pos = self.positions.get_element(corrected_index)
             
                 if pos.get_index() in entity_map.keys():
-                    entity = EntityFactory.get_object(entity_map[pos.get_index()])
+                    if pos.get_index() in innocents_map.keys():
+                        innocent_name = innocents_map[pos.get_index()]
+                        entity = EntityFactory.get_object(entity_map[pos.get_index()], innocent_name)
+                    else:
+                        entity = EntityFactory.get_object(entity_map[pos.get_index()])
                     self.entities.add_edge((corrected_pos, entity))
             
                 self.cells |= {corrected_pos: tile_map.get_element(pos.get_index())}
