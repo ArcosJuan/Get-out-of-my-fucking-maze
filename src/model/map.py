@@ -61,12 +61,12 @@ class Map:
         return chunk
         
 
-    def get_adjacent_positions(self, position) -> list:
+    def get_adjacent_positions(self, position, include_diagonals=True) -> list:
         """ Returns the list of Position objects 
             adjacent to the one given by parameter.
         """
 
-        return self.positions.get_adjacencies(self.positions.index(position))
+        return self.positions.get_adjacencies(self.positions.index(position), include_diagonals)
 
 
     def get_limit(self) -> Position:
@@ -93,6 +93,12 @@ class Map:
         """
 
         self.entities.add_edge((position, entity))
+
+
+    def remove_entity(self, entity): 
+        entity_pos = self.get_entity_position(entity)
+        self.entities.remove_node(entity)
+        Ed.post(MapUpdated([entity_pos]))
 
 
     def get_entities(self, positions: list) -> dict:
@@ -144,7 +150,7 @@ class Map:
             Returns a bool that indicates if it could be moved.
         """
 
-        if  self.avoid_position(event.get_destination()):
+        if  not self.passable_position(event.get_destination()):
             return False
 
         entity = event.get_entity()
@@ -191,7 +197,7 @@ class Map:
 
 
 
-    def avoid_position(self, position) -> bool:
+    def passable_position(self, position) -> bool:
         """ Returns True if it's no problem with pass over a position.
         """
 

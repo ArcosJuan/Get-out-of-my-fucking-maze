@@ -1,8 +1,9 @@
 from src.controller import EventDispatcher as Ed
 from src.events import ArrowKey
+from src.events import Die
 from src.events import EnterMaze
 from src.events import ExitMaze
-from src.events import Interact
+from src.events import ReturnKey
 from src.events import MoveEntity
 from src.events import MoveCamera
 from src.events import GameStart
@@ -20,14 +21,19 @@ from src.view.sprites import Sprite
 class Logic:
     def __init__(self):
         Ed.add(ArrowKey, self.move_player)
-        Ed.add(Interact, self.interact)
+        Ed.add(ReturnKey, self.interact)
         Ed.add(GameStart, self.game_start)
         Ed.add(EnterMaze, self.enter_maze)
         Ed.add(ExitMaze, self.exit_maze)
         Ed.add(ViewChanged, self.point_player)
+        Ed.add(Die, self.kill_innocent)
         self.player: Player = Player()
         self.world: World = None 
         self.maze = None
+
+
+    def kill_innocent(self, event):
+        self.get_actual_place().remove_entity(event.get_innocent())
 
 
     def get_actual_place(self): return self.maze if self.maze else self.world
@@ -69,12 +75,25 @@ class Logic:
 
 
     def interact(self, event):
-        player_position = self.get_actual_place().get_entity_position(self.player)
-        entities = self.get_actual_place().get_entity(player_position)
+        actual_place = self.get_actual_place()
+        player_position = actual_place.get_entity_position(self.player)
+        entities = actual_place.get_entity(player_position)
         if entities: entities = entities[player_position]
+
         for entity in entities:
             if isinstance(entity, Entity):
                 entity.interact()
+                return
+        
+        # If it is not on any entity, check if it is in the range of a reachable entity.
+        adjacent_pos = actual_place.get_adjacent_positions(player_position, False)
+        adjacent_entities = actual_place.get_entities(adjacent_pos)
+        if adjacent_entities:
+            for pos in adjacent_entities.keys():
+                for entity in adjacent_entities[pos]:
+                    if isinstance(entity, Entity):
+                        if entity.get_reachable():
+                            entity.interact()
 
 
     def enter_maze(self, event):

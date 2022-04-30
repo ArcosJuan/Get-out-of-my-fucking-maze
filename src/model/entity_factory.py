@@ -15,5 +15,5 @@ class EntityFactory:
 
 
     @classmethod
-    def get_object(cls, entity):
-        return cls.entities_equivalences[entity]()
+    def get_object(cls, entity, *args):
+        return cls.entities_equivalences[entity](*args)

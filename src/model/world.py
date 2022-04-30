@@ -18,7 +18,7 @@ class World(Map):
         are all the characters and buildings of the game
     """
     
-    def __init__(self, size:tuple = (128,128), min_size:tuple = (20,30), biomes:int=64):
+    def __init__(self, size:tuple = (128,128), min_size:tuple = (20,30), biomes:int=64, maze_ratio:int=4):
         assert biomes <= 128, \
             "So many biomes take a long time to generate the world"
         
@@ -33,7 +33,7 @@ class World(Map):
         self.positions: Matrix = self._generate_positions(size)
         self.entities = NonDirectionalGraph() # {Position -- Object}
         self.chunks= self._generate_chunks(self.positions, min_size, size)
-        self.cells = self._generate_cells(self.positions,biomes)
+        self.cells = self._generate_cells(self.positions, biomes, maze_ratio)
 
 
 
@@ -61,7 +61,7 @@ class World(Map):
         )
 
 
-    def _generate_cells(self, positions:Matrix, biomes_qty=64) -> dict:
+    def _generate_cells(self, positions:Matrix, biomes_qty, maze_ratio) -> dict:
         """ Receives an iterable of Position type objects and
             generate a dict of Biomes with a position as key.
         """
@@ -118,7 +118,7 @@ class World(Map):
                     
         sorted_index = [seeds_index[key] for key in sorted(seeds_index)]
         zones = iter(positions.generate_voronoi_tesselation(sorted_index))
-        self._generate_mazes(sorted_index, biomes_qty//8)
+        self._generate_mazes(sorted_index, biomes_qty//maze_ratio)
         return {position:seeds[next(zones)] for position in positions}
 
 
@@ -149,20 +149,20 @@ class World(Map):
         return positions
 
 
-    def avoid_position(self, position):
+    def passable_position(self, position):
         """ Returns True if it's no problem with pass over a position.
         """
         
         if not BiomesManager.get_passable(self.cells[position]): 
-            return True
+            return False
 
         elif self.entities.has_node(position): 
             for entity in self.entities.get_adjacencies(position):
                 if isinstance(entity, Entity):
-                    return not entity.get_avoidable()
+                    return entity.get_walkable()
 
 
-        else: return False    
+        else: return True    
 
 
     
