@@ -11,13 +11,13 @@ class Window(metaclass=Singleton):
 
     def __init__(self):
         pg.display.set_caption('Get out of my fucking maze')
-        
+
         self._display_size = (
             pg.display.Info().current_w,
             pg.display.Info().current_h
         ) # Obtains the resolution of the screen.
-        
-        self.resolution = (960, 540) # Current resolution.
+
+        self.set_resolution((0,0)) # Intial resolution.
         self.background = (0,0,0)
 
 
@@ -33,22 +33,21 @@ class Window(metaclass=Singleton):
         self._surface = new_surface
 
 
-    @property
-    def resolution(self) -> tuple[int,int]:
-        return self._resolution
+    def get_resolution(self) -> tuple[int,int]:
+        return self.resolution
 
 
-    @resolution.setter
-    def resolution(self, new_resolution, flags=0):
+    def set_resolution(self, new_resolution, flags=0):
         try:
             assert new_resolution[0] <= self._display_size[0] \
             and new_resolution[1] <= self._display_size[1] , \
                 "The resolution is too large!"
 
-            self._resolution = new_resolution
+            self.resolution = new_resolution
+
 
         except AttributeError:
-            self._resolution = new_resolution
+            self.resolution = new_resolution
 
         self.surface = pg.display.set_mode(self.resolution, flags)        
         Ed.post(UpdateResolution())

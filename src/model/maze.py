@@ -35,10 +35,9 @@ class Maze(Map, Entity):
         Ed.add(MoveEntity, self.move_entity)
 
         self.name = self.get_new_name()
-        size = self._calculate_size()
-        self.positions: Matrix = self._generate_positions(size)
+        self.positions: Matrix = self._generate_positions(self._calculate_size())
         self.entities = NonDirectionalGraph() # {Position -- Object} 
-        self.chunks= self._generate_chunks(size, self.positions)
+        self.chunks= self._generate_chunks(self.positions)
         self.cells = self._generate_cells(self.positions)
 
         self._load()
@@ -92,7 +91,7 @@ class Maze(Map, Entity):
     def interact(self): Ed.post(EnterMaze(self))
 
 
-    def _generate_chunks(self, min_size:tuple, positions:Matrix) -> Matrix:
+    def _generate_chunks(self, positions:Matrix) -> Matrix:
         """ Returns a Matrix of Chunk objects based on a given size 
             (the minimum number of cells that can fit in a Chunk).
         """
@@ -102,7 +101,7 @@ class Maze(Map, Entity):
 
         chunks_amount = (size[0] * size[1]) // (chunk_size[0] * chunk_size[1])
 
-        splited_positions = positions.split(chunks_amount)
+        splited_positions = positions.split(chunks_amount, chunk_size)
 
         return Matrix(
             [[Chunk(positions, (y,x)) for x, positions in enumerate(row)]

@@ -16,7 +16,7 @@ from src.view.window import Window
 class PopupMenu:
     box_pieces = {"topleft": DIALOG["TOPLEFT"], "top": DIALOG["TOP"], "center": DIALOG["CENTER"]}
     
-    def __init__(self, options, box_relative_pos=(1/2,1/2), min_size = 20, max_size = 30, txt_a_pct=5, text_default_color=(255,0,0), text_active_color = (0,255,0)):
+    def __init__(self, options, box_relative_pos=(1/2,1/2), min_size = 20, max_size = 30, txt_to_pct=5, text_default_color=(255,255,255), text_active_color = (255,0,0), initial_index=0):
         Ed.add(Interact, self.interact)
         Ed.add(Tick, self.draw)
         Ed.add(UpdateResolution, self.update_size)
@@ -25,7 +25,7 @@ class PopupMenu:
         Ed.add_exclusive_listener(Interact, self.interact)
 
         # TEXT INITIALIZATION:
-        self.txt_a_pct = txt_a_pct
+        self.txt_to_pct = txt_to_pct # It is the percentage of the screen that the text occupies.
         self.options = options # list[tuple(string, Event/WeakBoundMethod)]
         
         # Text properties:
@@ -43,15 +43,22 @@ class PopupMenu:
         self._box_sprite_init()
         
         self.option_sprites = self._get_option_sprites()
-        self.index = 0
-        self.option_sprites[self.index].change_color(self.text_p["acolor"])
+        self._set_index(initial_index)
+
+
+    def _set_index(self, option_index):
+        self.index = option_index
+        for option_sprite in self.option_sprites:
+            option_sprite.change_color(self.text_p["dcolor"])
+
+        self.option_sprites[option_index].change_color(self.text_p["acolor"])
 
 
     def _get_text_height(self):
         return int(
                 (
-                    self.txt_a_pct*(Window().resolution[0]
-                    *Window().resolution[1])/100
+                    self.txt_to_pct*(Window().get_resolution()[0]
+                    *Window().get_resolution()[1])/100
                 )**(1/2)
             )
 
@@ -65,8 +72,8 @@ class PopupMenu:
 
     def _set_relative_position(self):
         self.box_rect.center = (
-            Window().resolution[0] * self.box_relative_pos[0],
-            Window().resolution[1] * self.box_relative_pos[1]
+            Window().get_resolution()[0] * self.box_relative_pos[0],
+            Window().get_resolution()[1] * self.box_relative_pos[1]
         )
 
 
@@ -84,8 +91,8 @@ class PopupMenu:
             given a maximum and minimum size.
         """
 
-        x = (Window().resolution[0] * 10) // 100
-        y = (Window().resolution[1] * 10) // 100
+        x = (Window().get_resolution()[0] * 10) // 100
+        y = (Window().get_resolution()[1] * 10) // 100
 
         scale = x if x < y else y 
 
@@ -110,8 +117,8 @@ class PopupMenu:
         box_min_size[0] += self.box_pieces["top"].get_size()[0] * 3
         box_min_size[1] += self.box_pieces["top"].get_size()[1] * 2
 
-        if Window().resolution[0] < box_min_size[0] \
-            or Window().resolution[1] < box_min_size[1]:
+        if Window().get_resolution()[0] < box_min_size[0] \
+            or Window().get_resolution()[1] < box_min_size[1]:
             raise AssertionError("Current Window resolution cannot show dialogue box properly")
 
 
@@ -191,19 +198,14 @@ class PopupMenu:
 
 
     def move_option(self, arrow_event):
-        for option_sprite in self.option_sprites:
-            option_sprite.change_color(self.text_p["dcolor"])
-
         if arrow_event.get_y() == 1:
             if self.index > 0:
-                self.index -= 1
-            else: self.index = len(self.options) - 1
+                self._set_index(self.index - 1)
+            else: self._set_index(len(self.options) - 1)
         elif arrow_event.get_y() == -1:
             if self.index < len(self.options) - 1:
-                self.index  += 1
-            else: self.index = 0
-
-        self.option_sprites[self.index].change_color(self.text_p["acolor"])
+                self._set_index(self.index + 1)
+            else: self._set_index(0)
 
 
     def interact(self, interact_event):

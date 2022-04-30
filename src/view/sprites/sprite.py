@@ -1,10 +1,20 @@
 import pygame as pg
+from src.view import Window
 
 
 class Sprite(pg.sprite.Sprite):
     ed = None
-    min_size = 30
+    min_size = 25
     actual_size = min_size
+
+    @classmethod
+    def calculate_length(cls, resolution) -> tuple[int, int]:
+        """ Returns the length that the visible_cells should have,
+            based on the given resolution of the window.
+        """
+
+        return (resolution[1] // cls.get_actual_size(), resolution[0] // cls.get_actual_size())
+
 
     @classmethod
     def set_size(cls, height):
