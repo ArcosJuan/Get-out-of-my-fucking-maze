@@ -1,11 +1,11 @@
 import pygame as pg
-from src.references.images import INNOCENT
+from src.references.images import INNOCENTS
 from src.view.sprites import Sprite
 
 class InnocentSprite(Sprite):
 
-    def __init__(self):
-        self.sprite = INNOCENT
+    def __init__(self, name):
+        self.sprite = INNOCENTS[name]
         self.image = self.sprite
         self.rect = self.image.get_rect()
 

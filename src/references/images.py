@@ -1,10 +1,21 @@
 import pygame as pg
+import os
 from src.references import Biome
 from src.references import Tile
 
+def load_innocent_sprites():
+    with os.scandir('assets/graphics/entities/charactors') as files:
+        sprites = [file for file in files if file.is_file()]
+        if not sprites: raise AssertionError('error loading sprites')
+        innocents = dict()
+        for sprite in sprites:
+            name = sprite.name.replace(".png", "")
+            innocents[name] = pg.image.load(sprite.path).convert_alpha()
+        return innocents
 
-PLAYER =  pg.image.load('assets/graphics/entities/charactors/player.png').convert_alpha()
-INNOCENT =  pg.image.load('assets/graphics/entities/charactors/innocent.png').convert_alpha()
+
+PLAYER =  pg.image.load('assets/graphics/entities/player.png').convert_alpha()
+INNOCENTS =  load_innocent_sprites()
 LADDER =  pg.image.load('assets/graphics/entities/ladder.png').convert_alpha()
 WALL =  pg.image.load('assets/graphics/entities/wall.png').convert_alpha()
 

@@ -29,6 +29,9 @@ class Innocent(Entity):
         self.dialogs = INNOCENTS[self.name]
 
 
+    def get_name(self): return self.name
+    
+
     def interact(self):
         Ed.add(Kill, self.get_killed)
         Ed.post(DialogInit(random.choice(self.dialogs)))

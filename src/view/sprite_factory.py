@@ -26,14 +26,14 @@ class SpriteFactory:
     }
 
     @classmethod
-    def get_sprite(cls, entity):
+    def get_sprite(cls, entity, *args):
         """ Creates and returns a Sprite instance that correspond
             with the class of the object passed by value
         """
 
         equivalence = cls.sprite_equivalences[entity.__class__]
 
-        return equivalence[0], equivalence[1]()
+        return equivalence[0], equivalence[1](*args)
 
 
     @classmethod
@@ -42,7 +42,11 @@ class SpriteFactory:
 
         for position in entities:
             for entity in entities[position]:
-                layer, sprite = cls.get_sprite(entity)
+                if isinstance(entity , Innocent):
+                    layer, sprite = cls.get_sprite(entity, entity.get_name())
+                else:
+                    layer, sprite = cls.get_sprite(entity)
+
                 if entity_sprites.get(position): 
                     entity_sprites[position] |= {layer: sprite}
                 else: 
